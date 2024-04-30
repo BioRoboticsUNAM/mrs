@@ -1,0 +1,10 @@
+(load objects_deftemplates.clp)
+(load virbot_initial_state.clp)
+;(load virbot_initial_state_final.clp)
+;(load virbot_initial_state_blocks.clp)
+(load write_objects.clp)
+(watch rules)
+(watch facts)
+(reset)
+(run)
+

@@ -1,0 +1,8 @@
+apple 0.40 1.0
+sushi 0.30 1.0
+milk 0.20 1.0
+soap 0.50 1.1
+perfume 0.37 1.1
+shampoo 0.20 1.1
+book 0.2 1.50
+hammer 1.6 0.40

@@ -1,0 +1,16 @@
+object deposit 6.183334 7.0 0.0
+object storage 3.183334 2.0 0.0
+object blockA 0.34 0.3 0.0
+object blockB 0.34 0.4 0.0
+object blockC 0.34 0.2 0.0
+object blockD 0.9 1.5 0.0
+object blockE 0.9 1.4 0.0
+object blockF 0.9 1.6 0.0
+object freespace 0.0 0.0 0.0
+furniture cubestable 6.183334 7.0 0.0
+room livingroom 0.75 1.8
+room kitchen 1.7 1.4
+room bedroom 0.3 0.6
+room corridor 0.9 1.0
+room childsbedroom 1.0 0.5
+room storage 1.6 0.6

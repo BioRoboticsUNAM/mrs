@@ -1,0 +1,13 @@
+# Ignore everything
+*
+# But these files
+!.gitignore
+!.gitattributes
+!CMakeLists.txt
+!readme.MD
+# And these filetypes
+!*.dat
+!*.clp
+# And these directories
+!src/
+!include/

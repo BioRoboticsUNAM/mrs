@@ -1,0 +1,16 @@
+room freespace 0.0 0.0 0.0
+room livingroom 0.80 1.53
+room kitchen 1.68 1.39
+room bedroom 0.40 0.55
+room corridor 0.4 1.00
+room childsbedroom 1.0 0.50
+room storage 1.6 0.60
+furniture table bedroom 0.183334 0.700000 0.0
+furniture table livingroom 3.183334 2.000000 0.0
+furniture cubestable bedroom 6.183334 7.000000 0.0
+object blockA bedroom 0.34 0.30 0.0
+object blockB bedroom 0.34 0.40 0.0
+object blockC bedroom 0.34 0.20 0.0
+object blockD livingroom 0.9 1.50 0.0
+object blockE livingroom 0.9 1.40 0.0
+object blockF livingoom 0.9 1.60 0.0

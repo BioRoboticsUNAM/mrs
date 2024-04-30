@@ -1,0 +1,26 @@
+# Ignore everything
+*
+# But these files
+!.gitignore
+!readme.MD
+# And these filetypes
+!*.c
+!*.clp
+!*.cpp
+!*.h
+!*.hpp
+!*.py
+
+
+!*.dat
+!*.jpg
+!*.launch
+!*.png
+!*.raw
+!*.rviz
+!*.sh
+!*.top
+!*.txt
+!*.wrl
+# even if they are in subdirectories
+!**/

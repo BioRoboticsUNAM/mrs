@@ -1,0 +1,10 @@
+# Ignore everything
+*
+# But these files
+!.gitignore
+!readme.MD
+# And these filetypes
+!*.launch
+!*.rviz
+# even if they are in subdirectories
+!**/

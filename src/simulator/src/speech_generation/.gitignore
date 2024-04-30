@@ -1,0 +1,15 @@
+# Ignore everything
+*
+# But these files
+!.gitignore
+!readme.MD
+!readme.txt
+!speech_generation_node
+# And these filetypes
+!*.c
+!*.cpp
+!*.h
+
+!*.dll
+!*.exe
+!*.dic

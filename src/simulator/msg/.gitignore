@@ -1,0 +1,9 @@
+# Ignore everything
+*
+# But these files
+!.gitignore
+!readme.MD
+# And these filetypes
+!*.msg
+# even if they are in subdirectories
+!**/

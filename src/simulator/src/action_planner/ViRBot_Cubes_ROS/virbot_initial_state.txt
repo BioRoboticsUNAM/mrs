@@ -1,0 +1,25 @@
+object mail_box corridor 0.25 1.0
+object cold_storage kitchen 1.5 1.66
+object tools_storage deposit 0.4 1.63
+object book-shelf studio 0.2 0.16
+object service_table service 1.65 0.35
+object desk studio 0.25 0.74
+object bed bedroom 0.95 0.36
+object apple corridor 0.4 1.0
+object sushi corridor 0.3 1.0
+object milk corridor 0.2 1.0
+object soap corridor 0.5 1.1
+object perfume corridor 0.37 1.1
+object shampoo corridor 0.2 1.1
+object book studio 0.2 1.5
+object hammer deposit 0.8 1.40
+object freespace any 0.0 0.0
+furniture fridge nil 1.5 1.436
+furniture table nil 1.65 0.35
+room deposit 0.7 1.51
+room corridor 0.6 1.0
+room studio 0.25 1.45
+room service 1.65 0.55
+room kitchen 1.6 1.4
+room bedroom 1.0 0.55
+room library 0.2 0.36
