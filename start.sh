@@ -1,7 +1,7 @@
 #!/bin/bash
 #Script to start the ros simulations
 xterm -hold -e ". devel/setup.bash && roscore" &
-xterm -hold -e ". devel/setup.bash && roscd simulator/src/gui/ && python3 simulator_node.py" &
+xterm -hold -e ". devel/setup.bash && roscd simulator/src/gui/ && python simulator_node.py" &
 sleep 3
 xterm -hold -e ". devel/setup.bash  && rosrun simulator light_node" &
 xterm -hold -e ". devel/setup.bash  && rosrun simulator laser_node" &
