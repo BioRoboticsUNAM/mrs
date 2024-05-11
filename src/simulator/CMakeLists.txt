@@ -147,8 +147,11 @@ catkin_package(
 ## Build ##
 ###########
 
-## Build the CLIPS library libclips.so
+## Build the CLIPS library libclips.a
 add_subdirectory(src/clips60)
+
+## Build the CLIPS library bridge.a
+add_subdirectory(src/bridge)
 
 ## Build the main node
 add_subdirectory(src/rosclips)

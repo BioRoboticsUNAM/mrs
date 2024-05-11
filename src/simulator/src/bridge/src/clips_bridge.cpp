@@ -6,7 +6,6 @@
 
 #include "utils.h"
 #include "clipswrapper.h"
-// #include "dummy_func.h"
 
 
 
@@ -88,13 +87,14 @@ bool ClipsBridge::init(int argc, char **argv, ros::NodeHandle& nh, int delay){
 void ClipsBridge::initCLIPS(int argc, char **argv){
 	clips::initialize();
 	clips::rerouteStdin(argc, argv);
+	clips::clear();
 	std::cout << "Clips ready" << std::endl;
 
 	// Load clp files specified in file
 	loadFile(clips_file);
 	if(flg_facts) clips::toggleWatch(clips::WatchItem::Facts);
 	if(flg_rules) clips::toggleWatch(clips::WatchItem::Rules);
-	// Reset();
+	// clips::reset();
 
 	// clips::printFacts();
 }
@@ -156,8 +156,7 @@ void ClipsBridge::sendCommand(std::string const& s){
 
 bool ClipsBridge::loadClp(const std::string& fpath){
 	ROS_INFO("Loading file '%s'...", fpath.c_str() );
-	int flag = clips::load( fpath );
-	if(flag <= 0){
+	if( !clips::load( fpath ) ){
 		ROS_ERROR("Error in file '%s' or does not exist", fpath.c_str());
 		return false;
 	}
@@ -280,42 +279,6 @@ void ClipsBridge::handleWatch(const std::string& arg){
 
 
 
-/*
-void ClipsBridge::parseMessage(std::string& m){
-	if(contains(m, "CONTINUE") )
-		return;
-	else if(contains(m, "FACTS") ){
-		clips::facts();
-		flg_facts = 1;
-	}
-	else if( contains(m, "RULES") )
-		flg_rules = 1;
-	else if( contains(m, "UNTRACE") )
-		flg_trace = 0;
-	else if( contains(m, "TRACE") )
-		flg_trace = 1;
-	else if( contains(m, "NUMBER") ){
-		num = utils::xtractInt(m);
-		ROS_INFO("Number %d", num);
-	}
-	else if( contains(m, "UNWATCH") ){
-		flg_rules = 0;
-		flg_facts = 0;
-	}
-	else if( !strcmp(m.c_str(), "RESET") ){
-		Clear();
-		loadDat(clips_file);
-		Reset();
-	}
-	else{
-		assertFact( m );
-	}
-}
-*/
-
-
-
-
 /* ** ********************************************************
 *
 * Class methods: ROS-related
@@ -392,48 +355,7 @@ void ClipsBridge::run(){
 		parseMessage( queue.consume() );
 	}
 }
-/*
-void ClipsBridge::run(){
-	if(running) return;
-	running = true;
-	// Loop forever
-	while(running && ros::ok()){
-		// SetWatchItem("facts", flg_facts, NULL);
-		if(flg_facts) clips::watch(clips::WatchItem::Facts);
-		else clips::unwatch(clips::WatchItem::Facts);
 
-		// SetWatchItem("rules", flg_rules, NULL);
-		if(flg_rules) clips::watch(clips::WatchItem::Rules);
-		else clips::unwatch(clips::WatchItem::Rules);
-
-
-		Run(num);
-
-		// // it checks if function waitsec finished
-		// if(flag_time == 1){
-		// 	clips::assertString(buffer_time);
-		// 	SetFactListChanged(0);
-		// 	flag_time = 0;
-		// }
-
-		if (flg_trace == 1){
-			while( queue.empty() )
-				std::this_thread::sleep_for(std::chrono::milliseconds(20));
-		}
-
-		if( queue.empty() ){
-			std::this_thread::sleep_for(std::chrono::milliseconds(20));
-			continue;
-		}
-		// SetWatchItem("facts", 1, NULL);
-		clips::watch(clips::WatchItem::Facts);
-
-		// For each message in queue
-		while( !queue.empty() ){
-			parseMessage( queue.consume() );
-		}
-	}
-}*/
 
 
 /* ** ********************************************************
@@ -443,17 +365,11 @@ void ClipsBridge::run(){
 * *** *******************************************************/
 void ClipsBridge::subscriberCallback(std_msgs::String::ConstPtr const& msg, std::string const& topic) {
 	if(msg->data.length() < 1) return;
-	// if(msg->data[0] != 0)
-		// ROS_INFO("[%s]: [%s]", topic.c_str(), msg->data.c_str());
-	// else
-		// ROS_INFO("[%s] (%lu bytes):", topic.c_str(), msg->data.length());
 	if (topic == topicIn){
 		queue.produce( msg->data );
 	}
 	else if(msg->data[0] != 0)
-	// else if (topic_facts.find("f") != topic_facts.end()){
 		clips::assertString( "(" + topic + " " + msg->data + ")" );
-	// }
 }
 
 
@@ -513,7 +429,7 @@ void ClipsBridge::printDefaultArgs(std::string const& pname){
 	std::cout << " -i "   << topicIn;
 	std::cout << " -o "   << topicOut;
 	std::cout << " -s "   << topicStatus;
-	std::cout << " -e "   << clips_file;
+	std::cout << " -e "   << ( (clips_file.length() > 0) ? clips_file : "''");
 	std::cout << " -w "   << flg_facts;
 	std::cout << " -r "   << flg_rules;
 	std::cout << " -num " << num;
@@ -538,20 +454,4 @@ void ClipsBridge::printHelp(std::string const& pname){
 	std::cout << "Example:" << std::endl;
 	std::cout << "    " << pname << " -e virbot.dat -w 1 -r 1 -num 20"  << std::endl;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
