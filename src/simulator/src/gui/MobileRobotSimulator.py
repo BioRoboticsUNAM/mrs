@@ -9,13 +9,28 @@
 #						#
 ################################################# 
 
+# import rospkg
+# from tkinter import *
+# from tkinter.font import Font
+# import queue
+# import threading
+# from tkinter import ttk
+# from tkinter import messagebox as tkMessageBox
+# import time
+# import math
+# from PIL import Image
+# from PIL import ImageDraw
+# import os
+# import numpy as np
+# import subprocess
+
 import rospkg
-from tkinter import *
-from tkinter.font import Font
-import queue
+from Tkinter import *
+from tkFont import Font
+import Queue as queue
 import threading
-from tkinter import ttk
-from tkinter import messagebox as tkMessageBox
+import ttk
+import tkMessageBox
 import time
 import math
 from PIL import Image
