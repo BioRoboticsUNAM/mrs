@@ -49,7 +49,8 @@ std::string get_current_path(){
 /* ** ********************************************************
 * Constructor
 * *** *******************************************************/
-Bridge::Bridge() : ClipsBridge(){}
+Bridge::Bridge() : ClipsBridge(),
+	qr(QueryRouter::getInstance()){}
 
 
 
@@ -219,10 +220,13 @@ void Bridge::cmdLoadCallback(std_msgs::String::ConstPtr const& msg){
 
 //string ← f(string query)
 bool Bridge::srvQueryKDB(simulator::StrQueryKDB::Request& req, simulator::StrQueryKDB::Response& res){
+	qr.enable();
 	clips::sendCommand(req.query, true);
 	clips::run();
-	res.result = "";
+	res.result = qr.read();
+	qr.disable();
 	return true;
+
 }
 
 
@@ -245,5 +249,16 @@ bool Bridge::srvClearKDB(simulator::clearKDB::Request& req, simulator::clearKDB:
 	if(!req.clear) return false;
 	clearCLIPS();
 	return res.cleared = true;
+}
+
+
+void Bridge::test(){
+	qr.enable();
+	printf("Router enabled\n");
+	// clips::sendCommand("(assert (foo))", true);
+	// clips::run();
+	// std::cout << "Query: "<< qr.read() <<std::endl;
+	// qr.disable();
+	// printf("Router disabled\n");
 }
 

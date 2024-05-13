@@ -8,6 +8,7 @@
 #include "std_msgs/String.h"
 
 #include "clips_bridge.h"
+#include "queryrouter.h"
 
 #include "simulator/StrQueryKDB.h"
 #include "simulator/InitKDB.h"
@@ -46,6 +47,9 @@ private:
 	bool srvQueryKDB(simulator::StrQueryKDB::Request& req, simulator::StrQueryKDB::Response& res);
 	bool srvInitKDB(simulator::InitKDB::Request& req, simulator::InitKDB::Response& res);
 	bool srvClearKDB(simulator::clearKDB::Request& req, simulator::clearKDB::Response& res);
+
+private:
+	QueryRouter& qr;
 };
 
 #endif // __BRIDGE_H__
