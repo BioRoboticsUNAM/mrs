@@ -35,6 +35,8 @@
 #include "bridge.h"
 #include "clipswrapper.h"
 
+#include "userfuncs.h"
+
 
 /* ** ********************************************************
 * Global variables
@@ -64,7 +66,7 @@ extern "C" {
 * *** *******************************************************/
 int main(int argc, char **argv){
 
-	ros::init(argc, argv, "talker");
+	ros::init(argc, argv, "planning_rm");
 	ros::NodeHandle n;
 
 	if( !bridge.init(argc, argv, n) )
@@ -84,18 +86,27 @@ int main(int argc, char **argv){
 * Function definitions
 * *** *******************************************************/
 void UserFunctions(){
-	// int clips::defineFunction(functionName, functionType, functionPointer, actualFunctionName);
+	// int DefineFunction(functionName, functionType, functionPointer, actualFunctionName);
 	// char *functionName, functionType, *actualFunctionName;
 	// int (*functionPointer)();
 
 	// (rospub ?topic ?str)
-	// DefineFunction("rospub", 'i', CLIPS_rospub_wrapper, "CLIPS_rospub_wrapper");
 	clips::defineFunction("rospub", 'i', CLIPS_rospub_wrapper);
 	// (rossub ?topic ?fact)
-	// DefineFunction("rossub", 'i', CLIPS_rossub_wrapper, "CLIPS_rossub_wrapper");
 	clips::defineFunction("rossub", 'i', CLIPS_rossub_wrapper);
-}
 
+	// (send-response ?cmd ?id FALSE "unknown command")
+	// clips::defineFunction("send-response", 'i', CLIPS_sendResponse_wrapper);
+
+	// (setCmdTimer ?timeout ?cmd ?id)
+	clips::defineFunction("setCmdTimer", 'i', CLIPS_setCmdTimer_wrapper);
+
+	// (log-message WARNING "str")
+	clips::defineFunction("log-message", 'v', CLIPS_logMessage_wrapper);
+
+	// (python-call setCmdTimer ...)
+	clips::defineFunction("python-call", 'i', CLIPS_pycall_wrapper);
+}
 
 void send_message(ClipsBridge& br, std::string const& s){
 	br.publish(s);
@@ -145,7 +156,31 @@ int CLIPS_rossub_wrapper(){
 	return bridge_subscribe_invoker(bridge, topic, fact_name);
 }
 
+
 inline
 int bridge_subscribe_invoker(ClipsBridge& br, std::string const& topic_name, std::string const& fact_name){
 	return br.subscribe(topic_name, fact_name);
+}
+
+
+
+
+int CLIPS_logMessage_wrapper(){
+	if(clips::argCountCheck("log-message", clips::ArgCountRestriction::AtLeast, 2) == -1)
+		return -1;
+
+	// 1. Fetch log level and argument count
+	std::string level = clips::returnLexeme(1);
+	int argc =  clips::returnArgCount();
+	std::string s;
+	for(int i = 2; i <= argc; ++i)
+		s+= clips::returnLexeme(i);
+
+	if( level == "INFO")
+		ROS_INFO( "%s", s.c_str() );
+	else if( level == "WARNING")
+		ROS_WARN( "%s", s.c_str() );
+	else if( level == "ERROR")
+		ROS_ERROR( "%s", s.c_str() );
+	return 1;
 }

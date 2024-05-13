@@ -9,29 +9,44 @@
 
 #include "clips_bridge.h"
 
+#include "simulator/StrQueryKDB.h"
+#include "simulator/InitKDB.h"
+#include "simulator/clearKDB.h"
 
 class ClipsBridge;
 
 class Bridge : public ClipsBridge{
 public:
 	Bridge();
+	void test();
 
-// Disable copy and constructructor and assignment op
 private:
-	Bridge(Bridge const& obj)        = delete;
+	Bridge(Bridge const& obj) = delete;
 	Bridge& operator=(Bridge const&) = delete;
 
-
-// Overriden class members
 protected:
-	virtual void initCLIPS(int argc, char **argv);
+	// virtual void initCLIPS(int argc, char **argv);
 	virtual void initPublishers(ros::NodeHandle& nh);
 	virtual void initServices(ros::NodeHandle& nh);
 	virtual void initSubscribers(ros::NodeHandle& nh);
 
 private:
-	// Additional class methods go here
-	// E.g. special ROS callbacks for messages and services
+	// void cmdResponseCallback(std_msgs::Bool::ConstPtr const& msg);
+	// void cmdSendCommandCallback(std_msgs::Bool::ConstPtr const& msg);
+	void cmdRunCallback(std_msgs::Bool::ConstPtr const& msg);
+	void cmdClearCallback(std_msgs::Bool::ConstPtr const& msg);
+	void cmdResetCallback(std_msgs::Bool::ConstPtr const& msg);
+	void cmdFactCallback(std_msgs::Bool::ConstPtr const& msg);
+	void cmdRuleCallback(std_msgs::Bool::ConstPtr const& msg);
+	void cmdAgendaCallback(std_msgs::Bool::ConstPtr const& msg);
+	void cmdSendCLIPSCallback(std_msgs::String::ConstPtr const& msg);
+	void cmdLoadCallback(std_msgs::String::ConstPtr const& msg);
+	void cmdSendAndRunCallback(std_msgs::String::ConstPtr const& msg);
+
+	bool srvQueryKDB(simulator::StrQueryKDB::Request& req, simulator::StrQueryKDB::Response& res);
+	bool srvInitKDB(simulator::InitKDB::Request& req, simulator::InitKDB::Response& res);
+	bool srvClearKDB(simulator::clearKDB::Request& req, simulator::clearKDB::Response& res);
 };
 
 #endif // __BRIDGE_H__
+
