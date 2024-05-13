@@ -1,28 +1,13 @@
 #################################################
-#						#
-#	MobileRobotSimulator.py			#
-#						#
-#		Diego Cordero			#
-#						#
-#	Biorobotics Laboratory			#
-# 		UNAM-2019			#
-#						#
+#                                               #
+#            MobileRobotSimulator.py            #
+#                                               #
+#		         Diego Cordero                  #
+#                                               #
+#            Biorobotics Laboratory             #
+# 		           UNAM-2019                    #
+#                                               #
 ################################################# 
-
-# import rospkg
-# from tkinter import *
-# from tkinter.font import Font
-# import queue
-# import threading
-# from tkinter import ttk
-# from tkinter import messagebox as tkMessageBox
-# import time
-# import math
-# from PIL import Image
-# from PIL import ImageDraw
-# import os
-# import numpy as np
-# import subprocess
 
 import rospkg
 from Tkinter import *
