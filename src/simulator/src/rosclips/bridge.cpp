@@ -50,7 +50,13 @@ std::string get_current_path(){
 * Constructor
 * *** *******************************************************/
 Bridge::Bridge() : ClipsBridge(),
-	qr(QueryRouter::getInstance()){}
+	qr(QueryRouter::getInstance()){
+		qr.setLogicalNames(
+		clips::LogicalName::stdout   |
+		clips::LogicalName::wdisplay |
+		clips::LogicalName::wtrace
+	);
+}
 
 
 
@@ -255,10 +261,13 @@ bool Bridge::srvClearKDB(simulator::clearKDB::Request& req, simulator::clearKDB:
 void Bridge::test(){
 	qr.enable();
 	printf("Router enabled\n");
-	// clips::sendCommand("(assert (foo))", true);
-	// clips::run();
-	// std::cout << "Query: "<< qr.read() <<std::endl;
-	// qr.disable();
-	// printf("Router disabled\n");
+	clips::sendCommand("(assert (foo))", true);
+	clips::run();
+	std::cout << "Query: "<< qr.read() <<std::endl;
+	clips::sendCommand("(facts)", true);
+	clips::run();
+	std::cout << "Query: "<< qr.read() <<std::endl;
+	qr.disable();
+	printf("Router disabled\n");
 }
 

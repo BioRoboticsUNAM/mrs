@@ -43,21 +43,32 @@ QueryRouter::~QueryRouter(){
 void QueryRouter::enable(){
 	if(enabled) return;
 	if(!registered) registerR();
-	printf("Activating router\n");
-	clips::activateRouter(routerName);
-	printf("Router activated\n");
+	// printf("Activating {%s} router\n", routerName.c_str());
+	// int result = clips::activateRouter(routerName);
+	// printf("Router activation %s\n", result ? "succeeded" : "failed");
+	enabled = clips::activateRouter(routerName);
 }
 
 
 void QueryRouter::disable(){
 	if(!enabled) return;
 	clips::deactivateRouter(routerName);
-	printf("Router deactivated\n");
+	enabled = false;
+	// printf("Router deactivated\n");
 }
 
 
 bool QueryRouter::isEnabled(){
 	return enabled;
+}
+
+
+clips::LogicalName QueryRouter::getLogicalNames(){
+	return lnFlags;
+}
+
+void QueryRouter::setLogicalNames(const clips::LogicalName& flags){
+	lnFlags = (clips::LogicalName)((int)flags & !(int)clips::LogicalName::stdin);
 }
 
 
@@ -94,7 +105,7 @@ void QueryRouter::registerR(){
 		NULL,           // Ungetc function
 		exitFunction    // Exit function
 	);
-	printf("Router added successfully\n");
+	printf("Router {%s} successfully added with priority %d\n", routerName.c_str(), (int)priority);
 }
 
 
@@ -120,7 +131,25 @@ name. The recognizer function for our router is defined below.
 */
 int queryFunction(char* logicalName){
 	QueryRouter& qr = QueryRouter::getInstance();
-	return !strcmp(logicalName, "wtrace");
+	// printf("queryFunction (%s)\n", logicalName);
+	if(!qr.isEnabled()) return 0;
+	int result = 0;
+
+	if( (qr.getLogicalNames() & clips::LogicalName::stdout  ) == clips::LogicalName::stdout   )
+		result |= !strcmp(logicalName, "stdout");
+	if( (qr.getLogicalNames() & clips::LogicalName::wclips  ) == clips::LogicalName::wclips   )
+		result |= !strcmp(logicalName, "wclips");
+	if( (qr.getLogicalNames() & clips::LogicalName::wdialog ) == clips::LogicalName::wdialog  )
+		result |= !strcmp(logicalName, "wdialog");
+	if( (qr.getLogicalNames() & clips::LogicalName::wdisplay) == clips::LogicalName::wdisplay )
+		result |= !strcmp(logicalName, "wdisplay");
+	if( (qr.getLogicalNames() & clips::LogicalName::werror  ) == clips::LogicalName::werror   )
+		result |= !strcmp(logicalName, "werror");
+	if( (qr.getLogicalNames() & clips::LogicalName::wwarning) == clips::LogicalName::wwarning )
+		result |= !strcmp(logicalName, "wwarning");
+	if( (qr.getLogicalNames() & clips::LogicalName::wtrace  ) == clips::LogicalName::wtrace   )
+		result |= !strcmp(logicalName, "wtrace");
+	return result;
 }
 
 /*
@@ -129,9 +158,12 @@ formation to our trace file. The print function for our router is
 defined below.
 */
 int printFunction(char *logicalName, char *str){
+	// printf("printFunction (%s =?= %s)\n", logicalName, str);
 	QueryRouter& qr = QueryRouter::getInstance();
+	// printf("    router is %s\n", qr.isEnabled() ? "enabled" : "disabled");
 	if(!qr.isEnabled()) return clips::print(logicalName, str);
 
+	// printf("printFunction is enabled\n");
 	qr.write(str);
 	clips::deactivateRouter(qr.getName());
 	clips::print(logicalName, str);

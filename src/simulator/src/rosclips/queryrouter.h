@@ -60,6 +60,16 @@ public:
 	clips::RouterPriority getPriority();
 
 	/**
+	 * Retrieves the OR-ed set of logical names captured by this router
+	 */
+	clips::LogicalName getLogicalNames();
+
+	/**
+	 * Sets the OR-ed set of logical names to be captured by this router
+	 */
+	void setLogicalNames(const clips::LogicalName& flags);
+
+	/**
 	 * Returns the data in the buffer.
 	 * The buffer is cleared afterwards.
 	 * @return The string contained in the internal buffer
@@ -86,6 +96,7 @@ private:
 	bool enabled;
 	bool registered;
 	std::string routerName;
+	clips::LogicalName lnFlags;
 	clips::RouterPriority priority;
 	std::string buffer;
 };
