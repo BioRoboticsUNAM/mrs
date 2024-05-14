@@ -37,15 +37,15 @@ int addRouter(const std::string& routerName, RouterPriority priority,
 }
 
 int activateRouter(const std::string& routerName){
-	return activateRouter( clipsstr(routerName) );
+	return ActivateRouter( clipsstr(routerName) );
 }
 
 int deactivateRouter(const std::string& routerName){
-	return deactivateRouter( clipsstr(routerName) );
+	return DeactivateRouter( clipsstr(routerName) );
 }
 
 int deleteRouter(const std::string& routerName){
-	return deleteRouter( clipsstr(routerName) );
+	return DeleteRouter( clipsstr(routerName) );
 }
 
 } // end namespace

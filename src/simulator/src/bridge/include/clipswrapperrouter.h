@@ -14,7 +14,7 @@ namespace clips{
 *
 ** ** **************************************************************/
 
-enum LogicalName{
+enum class LogicalName {
 	/**
 	 * The default for all user inputs. The read and readline
 	 * functions read from stdin if t is specified as the logical name.
@@ -75,6 +75,18 @@ int activateRouter(const std::string& routerName);
 int deactivateRouter(const std::string& routerName);
 int deleteRouter(const std::string& routerName);
 
+
+inline constexpr LogicalName operator&(LogicalName x, LogicalName y) {
+	return static_cast<LogicalName>(static_cast<int>(x) & static_cast<int>(y));
+}
+
+inline constexpr LogicalName operator|(LogicalName x, LogicalName y) {
+	return static_cast<LogicalName>(static_cast<int>(x) & static_cast<int>(y));
+}
+
+inline constexpr LogicalName operator^(LogicalName x, LogicalName y) {
+	return static_cast<LogicalName>(static_cast<int>(x) & static_cast<int>(y));
+}
 
 }
 #endif // __CLIPSWRAPPER_H__
