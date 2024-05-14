@@ -87,43 +87,43 @@ void Bridge::initSubscribers(ros::NodeHandle& nh){
 	ClipsBridge::initSubscribers(nh);
 
 	ros::Subscriber
-	// sub = nh.subscribe<>("/planning_rm/command_response", 1,
+	// sub = nh.subscribe<>("/planning_rm/command_response", 10,
 	// 		boost::bind(&Bridge::cmdResponseCallback, this, _1));
 	// subscribers["/planning_rm/command_response"] = sub;
 
-	// sub = nh.subscribe<>("/planning_rm/command_send_command", 1,
+	// sub = nh.subscribe<>("/planning_rm/command_send_command", 10,
 	// 		boost::bind(&Bridge::cmdSendCommandCallback, this, _1));
 	// subscribers["/planning_rm/command_send_command"] = sub;
 
-	sub = nh.subscribe<std_msgs::Bool>("/planning_rm/command_runCLIPS", 1,
+	sub = nh.subscribe<std_msgs::Bool>("/planning_rm/command_runCLIPS", 10,
 			boost::bind(&Bridge::cmdRunCallback, this, _1));
 	subscribers["/planning_rm/command_runCLIPS"] = sub;
 
-    sub = nh.subscribe<std_msgs::Bool>("/planning_rm/command_clearCLIPS", 1,
+    sub = nh.subscribe<std_msgs::Bool>("/planning_rm/command_clearCLIPS", 10,
     		boost::bind(&Bridge::cmdClearCallback, this, _1));
 	subscribers["/planning_rm/command_clearCLIPS"] = sub;
 
-    sub = nh.subscribe<std_msgs::Bool>("/planning_rm/command_resetCLIPS", 1,
+    sub = nh.subscribe<std_msgs::Bool>("/planning_rm/command_resetCLIPS", 10,
     		boost::bind(&Bridge::cmdResetCallback, this, _1));
 	subscribers["/planning_rm/command_resetCLIPS"] = sub;
 
-    sub = nh.subscribe<std_msgs::Bool>("/planning_rm/command_factCLIPS", 1,
+    sub = nh.subscribe<std_msgs::Bool>("/planning_rm/command_factCLIPS", 10,
     		boost::bind(&Bridge::cmdFactCallback, this, _1));
 	subscribers["/planning_rm/command_factCLIPS"] = sub;
 
-    sub = nh.subscribe<std_msgs::Bool>("/planning_rm/command_ruleCLIPS", 1,
+    sub = nh.subscribe<std_msgs::Bool>("/planning_rm/command_ruleCLIPS", 10,
     		boost::bind(&Bridge::cmdRuleCallback, this, _1));
 	subscribers["/planning_rm/command_ruleCLIPS"] = sub;
 
-    sub = nh.subscribe<std_msgs::Bool>("/planning_rm/command_agendaCLIPS", 1,
+    sub = nh.subscribe<std_msgs::Bool>("/planning_rm/command_agendaCLIPS", 10,
     		boost::bind(&Bridge::cmdAgendaCallback, this, _1));
 	subscribers["/planning_rm/command_agendaCLIPS"] = sub;
 
-    sub = nh.subscribe<std_msgs::String>("/planning_rm/command_sendCLIPS", 1,
+    sub = nh.subscribe<std_msgs::String>("/planning_rm/command_sendCLIPS", 10,
     		boost::bind(&Bridge::cmdSendCLIPSCallback, this, _1));
 	subscribers["/planning_rm/command_sendCLIPS"] = sub;
 
-    sub = nh.subscribe<std_msgs::String>("/planning_rm/command_loadCLIPS", 1,
+    sub = nh.subscribe<std_msgs::String>("/planning_rm/command_loadCLIPS", 10,
     		boost::bind(&Bridge::cmdLoadCallback, this, _1));
 	subscribers["/planning_rm/command_loadCLIPS"] = sub;
 
