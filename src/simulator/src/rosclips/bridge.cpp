@@ -127,7 +127,7 @@ void Bridge::initSubscribers(ros::NodeHandle& nh){
     		boost::bind(&Bridge::cmdLoadCallback, this, _1));
 	subscribers["/planning_rm/command_loadCLIPS"] = sub;
 
-    sub = nh.subscribe<std_msgs::String>("/planning_rm/command_sendAndRunCLIPS", 1,
+    sub = nh.subscribe<std_msgs::String>("/planning_rm/command_sendAndRunCLIPS", 10,
     		boost::bind(&Bridge::cmdSendAndRunCallback, this, _1));
 	subscribers["/planning_rm/command_sendAndRunCLIPS"] = sub;
 
