@@ -49,7 +49,14 @@ std::string get_current_path(){
 /* ** ********************************************************
 * Constructor
 * *** *******************************************************/
-Bridge::Bridge() : ClipsBridge(){}
+Bridge::Bridge() : ClipsBridge(),
+	qr(QueryRouter::getInstance()){
+		qr.setLogicalNames(
+		clips::LogicalName::stdout   |
+		clips::LogicalName::wdisplay |
+		clips::LogicalName::wtrace
+	);
+}
 
 
 
@@ -186,7 +193,7 @@ void Bridge::cmdAgendaCallback(std_msgs::Bool::ConstPtr const& msg){
 
 
 void Bridge::cmdSendCLIPSCallback(std_msgs::String::ConstPtr const& msg){
-	ROS_INFO("Command: Send");
+	// ROS_INFO("Command: Send");
 	// clips.SendCommand(data.data, True) ->
 	// 	_c.sendCommand(command, verbose)
 	// clipsFunctions.PrintOutput()
@@ -195,7 +202,7 @@ void Bridge::cmdSendCLIPSCallback(std_msgs::String::ConstPtr const& msg){
 
 
 void Bridge::cmdSendAndRunCallback(std_msgs::String::ConstPtr const& msg){
-	ROS_INFO("Command: SendAndRun");
+	// ROS_INFO("Command: SendAndRun");
 	// clips.SendCommand(data.data, True) ->
 	// 	_c.sendCommand(command, verbose)
 	// clipsFunctions.PrintOutput()
@@ -207,7 +214,7 @@ void Bridge::cmdSendAndRunCallback(std_msgs::String::ConstPtr const& msg){
 
 
 void Bridge::cmdLoadCallback(std_msgs::String::ConstPtr const& msg){
-	ROS_INFO("Command: Load");
+	// ROS_INFO("Command: Load");
 	if(!ends_with(msg->data, ".dat") && !ends_with(msg->data, ".clp")){
 		ROS_INFO("Load file %s: FAIL. Unsupported file format.", msg->data.c_str());
 		return;
@@ -219,16 +226,18 @@ void Bridge::cmdLoadCallback(std_msgs::String::ConstPtr const& msg){
 
 //string ← f(string query)
 bool Bridge::srvQueryKDB(simulator::StrQueryKDB::Request& req, simulator::StrQueryKDB::Response& res){
+	qr.enable();
 	clips::sendCommand(req.query, true);
 	clips::run();
-	res.result = "";
+	res.result = qr.read();
+	qr.disable();
 	return true;
 }
 
 
 // void ← f(string filePath, bool run)
 bool Bridge::srvInitKDB(simulator::InitKDB::Request& req, simulator::InitKDB::Response& res){
-	ROS_INFO("Service: InitKDB");
+	// ROS_INFO("Service: InitKDB");
 	if(!ends_with(req.filePath, ".dat") && !ends_with(req.filePath, ".clp")){
 		ROS_INFO("Load file %s: FAIL. Unsupported file format.", req.filePath.c_str());
 		return false;
@@ -241,9 +250,8 @@ bool Bridge::srvInitKDB(simulator::InitKDB::Request& req, simulator::InitKDB::Re
 
 // bool ← f(bool clear)
 bool Bridge::srvClearKDB(simulator::clearKDB::Request& req, simulator::clearKDB::Response& res){
-	ROS_INFO("Service: ClearKDB");
+	// ROS_INFO("Service: ClearKDB");
 	if(!req.clear) return false;
 	clearCLIPS();
 	return res.cleared = true;
 }
-
