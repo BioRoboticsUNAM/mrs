@@ -176,11 +176,11 @@ inline constexpr WatchItem operator&(WatchItem x, WatchItem y) {
 }
 
 inline constexpr WatchItem operator|(WatchItem x, WatchItem y) {
-	return static_cast<WatchItem>(static_cast<int>(x) & static_cast<int>(y));
+	return static_cast<WatchItem>(static_cast<int>(x) | static_cast<int>(y));
 }
 
 inline constexpr WatchItem operator^(WatchItem x, WatchItem y) {
-	return static_cast<WatchItem>(static_cast<int>(x) & static_cast<int>(y));
+	return static_cast<WatchItem>(static_cast<int>(x) ^ static_cast<int>(y));
 }
 
 

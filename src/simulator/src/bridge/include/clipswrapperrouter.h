@@ -81,11 +81,11 @@ inline constexpr LogicalName operator&(LogicalName x, LogicalName y) {
 }
 
 inline constexpr LogicalName operator|(LogicalName x, LogicalName y) {
-	return static_cast<LogicalName>(static_cast<int>(x) & static_cast<int>(y));
+	return static_cast<LogicalName>(static_cast<int>(x) | static_cast<int>(y));
 }
 
 inline constexpr LogicalName operator^(LogicalName x, LogicalName y) {
-	return static_cast<LogicalName>(static_cast<int>(x) & static_cast<int>(y));
+	return static_cast<LogicalName>(static_cast<int>(x) ^ static_cast<int>(y));
 }
 
 }
