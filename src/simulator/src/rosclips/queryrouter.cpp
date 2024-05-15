@@ -43,9 +43,6 @@ QueryRouter::~QueryRouter(){
 void QueryRouter::enable(){
 	if(enabled) return;
 	if(!registered) registerR();
-	// printf("Activating {%s} router\n", routerName.c_str());
-	// int result = clips::activateRouter(routerName);
-	// printf("Router activation %s\n", result ? "succeeded" : "failed");
 	enabled = clips::activateRouter(routerName);
 }
 
@@ -54,7 +51,6 @@ void QueryRouter::disable(){
 	if(!enabled) return;
 	clips::deactivateRouter(routerName);
 	enabled = false;
-	// printf("Router deactivated\n");
 }
 
 
@@ -105,7 +101,6 @@ void QueryRouter::registerR(){
 		NULL,           // Ungetc function
 		exitFunction    // Exit function
 	);
-	printf("Router {%s} successfully added with priority %d\n", routerName.c_str(), (int)priority);
 }
 
 
@@ -113,7 +108,6 @@ void QueryRouter::unregisterR(){
 	if(!registered) return;
 	clips::deactivateRouter(routerName);
 	clips::deleteRouter(routerName);
-	printf("Router unregistered\n");
 }
 
 
@@ -131,7 +125,6 @@ name. The recognizer function for our router is defined below.
 */
 int queryFunction(char* logicalName){
 	QueryRouter& qr = QueryRouter::getInstance();
-	// printf("queryFunction (%s)\n", logicalName);
 	if(!qr.isEnabled()) return 0;
 	int result = 0;
 
@@ -158,12 +151,9 @@ formation to our trace file. The print function for our router is
 defined below.
 */
 int printFunction(char *logicalName, char *str){
-	// printf("printFunction (%s =?= %s)\n", logicalName, str);
 	QueryRouter& qr = QueryRouter::getInstance();
-	// printf("    router is %s\n", qr.isEnabled() ? "enabled" : "disabled");
 	if(!qr.isEnabled()) return clips::print(logicalName, str);
 
-	// printf("printFunction is enabled\n");
 	qr.write(str);
 	clips::deactivateRouter(qr.getName());
 	clips::print(logicalName, str);

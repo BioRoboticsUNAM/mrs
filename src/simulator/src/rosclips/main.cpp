@@ -74,7 +74,6 @@ int main(int argc, char **argv){
 	ros::Rate loop_rate(10);
 
 	bridge.runAsync();
-	bridge.test();
 	// Give control to ROS
 	ros::spin();
 	bridge.stop();
