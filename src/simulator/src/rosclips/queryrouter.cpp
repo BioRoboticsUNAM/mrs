@@ -64,7 +64,7 @@ clips::LogicalName QueryRouter::getLogicalNames(){
 }
 
 void QueryRouter::setLogicalNames(const clips::LogicalName& flags){
-	lnFlags = (clips::LogicalName)((int)flags & !(int)clips::LogicalName::stdin);
+	lnFlags = (clips::LogicalName)((int)flags & ~(int)clips::LogicalName::stdin);
 }
 
 
