@@ -75,11 +75,11 @@ void Bridge::initServices(ros::NodeHandle& nh){
 		&Bridge::srvQueryKDB, this);
 	srvServers["/planning_rm/str_query_KDB"] = srv;
 
-	srv = nh.advertiseService("/planning_rm/init_KDB",
+	srv = nh.advertiseService("/planning_rm/init_kdb",
 		&Bridge::srvInitKDB, this);
 	srvServers["/planning_rm/init_KDB"] = srv;
 
-	srv = nh.advertiseService("/planning_rm/clear_KDB",
+	srv = nh.advertiseService("/planning_rm/clear_kdb",
 		&Bridge::srvClearKDB, this);
 	srvServers["/planning_rm/clear_KDB"] = srv;
 }
@@ -237,7 +237,7 @@ bool Bridge::srvQueryKDB(simulator::StrQueryKDB::Request& req, simulator::StrQue
 
 // void ← f(string filePath, bool run)
 bool Bridge::srvInitKDB(simulator::InitKDB::Request& req, simulator::InitKDB::Response& res){
-	// ROS_INFO("Service: InitKDB");
+	ROS_INFO("Service: InitKDB");
 	if(!ends_with(req.filePath, ".dat") && !ends_with(req.filePath, ".clp")){
 		ROS_INFO("Load file %s: FAIL. Unsupported file format.", req.filePath.c_str());
 		return false;
@@ -250,7 +250,7 @@ bool Bridge::srvInitKDB(simulator::InitKDB::Request& req, simulator::InitKDB::Re
 
 // bool ← f(bool clear)
 bool Bridge::srvClearKDB(simulator::clearKDB::Request& req, simulator::clearKDB::Response& res){
-	// ROS_INFO("Service: ClearKDB");
+	ROS_INFO("Service: ClearKDB");
 	if(!req.clear) return false;
 	clearCLIPS();
 	return res.cleared = true;
