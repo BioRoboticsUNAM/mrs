@@ -11,13 +11,23 @@
 ;*                                              *
 ;************************************************
 
-
-(defrule clips-alive
-        ?f <- (alive clips)
+; It sends a message that clips is alive
+(defrule clips-alive-start
+          (declare (salience 1000))
+          (ros-node ?node)
         =>
-        (retract ?f)
-        (printout t "ROS clips alive 0 ROS")
+          (rospub ?node "Clips alive")
 )
+
+
+
+;(defrule clips-alive
+        ;?f <- (alive clips)
+	;(ros-node ?node)
+        ;=>
+        ;(retract ?f)
+	;(rospub ?node "Clips alive")
+;)
 
 
 ;(defrule clips-alive-finish
@@ -44,20 +54,28 @@
         (declare (salience 100))
         ?f <-  (get-num-plans-total)
         ?f1 <- (send-ROS ?system num_plans-total ?npl ?num ?t ?n)
+	(ros-node ?node)
         =>
         (retract ?f ?f1)
         ;(retract ?f1)
-        (printout t "ROS " ?system " num_plans-total " ?npl " " ?num " " ?t " ROS")
+	(bind ?var (str-cat ?system " num_plans-total " ?npl " " ?num " " ?t " "  ?n))
+        ;(printout t "ROS " ?system " num_plans-total " ?npl " " ?num " " ?t " ROS")
+	(rospub ?node ?var)
+	(printout t "message send " ?var crlf)
 )
 
 
 (defrule send-ros-num_plans-number
 	(declare (salience 100))
+        (ros-node ?node)
         ?f <-  (get-num-plans-number ?npl)
         ?f1 <- (send-ROS ?system num_plans-number ?npl ?num ?t ?n)
         =>
         (retract ?f ?f1)
-        (printout t "ROS " ?system " num_plans-number " ?npl " " ?num " " ?t " ROS")
+        ;(printout t "ROS " ?system " num_plans-number " ?npl " " ?num " " ?t " ROS")
+        ( bind ?var (str-cat ?system " num_plans-number " ?npl " " ?num " " ?t ))
+	(rospub ?node ?var)
+	(printout t "message send " ?var crlf)
 )
 
 
@@ -73,32 +91,49 @@
 (defrule send-plan-two-arguments
 	;(declare (salience 100))
         ;?f <-  (step ?id ?nm)
+        (ros-node ?node)
         ?f1 <- (send-ROS ?system ?id&:(neq ?id num_plans-total) ?nm ?action ?arg1 ?arg2)
         =>
         (retract ?f1)
-        (printout t "ROS " ?system " plan " ?id " " ?nm " " ?action " " ?arg1 " " ?arg2 " ROS")
+        ;(printout t "ROS " ?system " plan " ?id " " ?nm " " ?action " " ?arg1 " " ?arg2 " ROS")
+        (bind ?var (str-cat ?system " plan " ?id " " ?nm " " ?action " " ?arg1 " " ?arg2 ))
+	(rospub ?node ?var)
+	(printout t "message send " ?var crlf)
 )
 
 
 
 (defrule send-plan-one-argument
-        ;(declare (salience 100))
-        ;?f <-  (step ?id ?nm)
+        (ros-node ?node)
         ?f1 <- (send-ROS ?system ?id ?nm ?action ?argument)
         =>
         (retract ?f1)
-        (printout t "ROS " ?system " plan " ?id " " ?nm " " ?action " "  ?argument " ROS")
+	(bind ?var (str-cat ?system " plan " ?id " " ?nm " " ?action " "  ?argument))
+        ;(printout t "ROS " ?system " plan " ?id " " ?nm " " ?action " "  ?argument " ROS")
+	(rospub ?node ?var)
+	(printout t "message send " ?var crlf)
 )
-
 
 (defrule send-plan-three-arguments
         (declare (salience 100))
-        ;?f <-  (step ?id ?nm)
+        (ros-node ?node)
         ?f1 <- (send-ROS ?system ?id ?nm ?action ?arg1 ?arg2 ?arg3)
         =>
         (retract ?f1)
-        (printout t "ROS " ?system " plan " ?id " " ?nm " " ?action " "  ?arg1 " " ?arg2 " " ?arg3  " ROS")
+        ;(printout t "ROS " ?system " plan " ?id " " ?nm " " ?action " "  ?arg1 " " ?arg2 " " ?arg3  " ROS")
+        (bind ?var (str-cat ?system " plan " ?id " " ?nm " " ?action " "  ?arg1 " " ?arg2 " " ?arg3))
+	(rospub ?node ?var)
+	(printout t "message send " ?var crlf)
 )
+
+
+;(defrule keep-clips-alive
+	;(declare (salience -1000))
+	;?f1 <- (keep-clips-alive)
+	;=>
+	;(retract ?f1)
+	;(assert (keep-clips-alive))
+;)
 
 
 

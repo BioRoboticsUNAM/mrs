@@ -14,6 +14,10 @@
 
 (deffacts Initial-state-objects-rooms-zones-actors
 
+; ROS node to send data
+	(ros-node "clips_out")
+	(keep-clips-alive)
+
 
 ; Objects definitions
 	( item (type Objects) (name mail_box)(room corridor)(image table)( attributes no-pick brown)(pose 0.25 1.00 0.0))

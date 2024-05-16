@@ -66,7 +66,7 @@
         ?f1 <- (plan (name ?name)(id ?id)(number ?num)(actions $?arguments)(status inactive))
         =>
 	(retract ?f)
-	;(retract ?f1)
+	(modify ?f1 (status active))
         (printout t "send plan " $?arguments  crlf)
         (assert (send-ROS ACT-PLN ?id ?num $?arguments ))
 	;(assert (send-plan ?name ?id (- ?num 1)))
