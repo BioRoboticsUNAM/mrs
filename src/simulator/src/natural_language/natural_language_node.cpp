@@ -11,6 +11,7 @@
 ************************************************/
 
 #include "ros/ros.h"
+#include "ros/package.h"
 #include <iostream>
 #include <vector>
 #include <ctime>
@@ -37,7 +38,7 @@ int start_clips(){
  // The third parameter is a timeout
  //file = "/src/expert_system/oracle.dat";
 // file = "/src/action_planner/ViRBot_Cubes_ROS/objects_deftemplates.dat";
- file = "/src/action_planner/ViRBot_Cubes_ROS/ROS_virbot.dat";
+ file = ros::package::getPath("simulator") + "/src/action_planner/ViRBot_Cubes_ROS/ROS_virbot.dat";
  init_kdb = SimuladorRepresentation::initKDB(file, false, 2000);
  if(!init_kdb){
                 std::cout << "CLIPS error file not found: " << file  << std::endl;

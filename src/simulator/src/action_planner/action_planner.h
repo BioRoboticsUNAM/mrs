@@ -12,6 +12,7 @@
 
 
 #include "ros/ros.h"
+#include "ros/package.h"
 #include "simulator/simulator_find_obj.h"
 #include "simulator/simulator_manipulator.h"
 #include <iostream>
@@ -89,8 +90,7 @@ int start_clips_node_action_planner(){
  //file = "/src/expert_system/oracle.dat";
  //file = "/src/action_planner/ViRBot_Cubes_ROS/ROS_cubes.dat";
  //file = "src/simulator/src/action_planner/ViRBot_Cubes_ROS/ROS_virbot.dat";
- file = "/home/dragon/Develop/catkin_ws-mrs/src/simulator/src/action_planner/ViRBot_Cubes_ROS/ROS_virbot.dat";
- file = "/home/jesus/savage/clips_ros/Clips_Ros_Mauricio/mobileRobotSimulator-master/src/simulator/src/action_planner/ViRBot_Cubes_ROS/ROS_virbot.dat";
+ file = ros::package::getPath("simulator") + "/src/action_planner/ViRBot_Cubes_ROS/ROS_virbot.dat";
  std::cout << "CLIPS file: " << file  << std::endl;
  init_kdb = SimuladorRepresentation::initKDB(file, false, 2000);
  init_kdb = 1;
