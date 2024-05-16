@@ -245,9 +245,9 @@ bool Bridge::srvInitKDB(simulator::InitKDB::Request& req, simulator::InitKDB::Re
 	ROS_INFO("Service: InitKDB");
 	if(!ends_with(req.filePath, ".dat") && !ends_with(req.filePath, ".clp")){
 		ROS_INFO("Load file %s: FAIL. Unsupported file format.", req.filePath.c_str());
-		return false;
+		return true;
 	}
-	if(!loadFile(req.filePath)) return false;
+	if(!loadFile(req.filePath)) return true;
 	if(req.run) clips::run();
 	return true;
 }
@@ -256,7 +256,7 @@ bool Bridge::srvInitKDB(simulator::InitKDB::Request& req, simulator::InitKDB::Re
 // bool ← f(bool clear)
 bool Bridge::srvClearKDB(simulator::clearKDB::Request& req, simulator::clearKDB::Response& res){
 	ROS_INFO("Service: ClearKDB");
-	if(!req.clear) return false;
+	if(!req.clear) return true;
 	clearCLIPS();
 	return res.cleared = true;
 }
