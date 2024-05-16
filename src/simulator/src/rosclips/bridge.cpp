@@ -71,17 +71,21 @@ void Bridge::initServices(ros::NodeHandle& nh){
 	ClipsBridge::initServices(nh);
 
 	ros::ServiceServer
-	srv = nh.advertiseService("/planning_rm/str_query_KDB",
+	srv = nh.advertiseService("/planning_rm/queryKDB",
 		&Bridge::srvQueryKDB, this);
-	srvServers["/planning_rm/str_query_KDB"] = srv;
+	srvServers["/planning_rm/queryKDB"] = srv;
 
-	srv = nh.advertiseService("/planning_rm/init_kdb",
+	srv = nh.advertiseService("/planning_rm/initKDB",
 		&Bridge::srvInitKDB, this);
-	srvServers["/planning_rm/init_KDB"] = srv;
+	srvServers["/planning_rm/initKDB"] = srv;
 
-	srv = nh.advertiseService("/planning_rm/clear_kdb",
+	srv = nh.advertiseService("/planning_rm/clearKDB",
 		&Bridge::srvClearKDB, this);
-	srvServers["/planning_rm/clear_KDB"] = srv;
+	srvServers["/planning_rm/clearKDB"] = srv;
+
+	srv = nh.advertiseService("/planning_rm/resetKDB",
+		&Bridge::srvResetKDB, this);
+	srvServers["/planning_rm/resetKDB"] = srv;
 }
 
 
@@ -230,7 +234,7 @@ void Bridge::cmdLoadCallback(std_msgs::String::ConstPtr const& msg){
 
 
 //string ← f(string query)
-bool Bridge::srvQueryKDB(simulator::StrQueryKDB::Request& req, simulator::StrQueryKDB::Response& res){
+bool Bridge::srvQueryKDB(simulator::QueryKDB::Request& req, simulator::QueryKDB::Response& res){
 	qr.enable();
 	clips::sendCommand(req.query, true);
 	clips::run();
@@ -242,7 +246,7 @@ bool Bridge::srvQueryKDB(simulator::StrQueryKDB::Request& req, simulator::StrQue
 
 // void ← f(string filePath, bool run)
 bool Bridge::srvInitKDB(simulator::InitKDB::Request& req, simulator::InitKDB::Response& res){
-	ROS_INFO("Service: InitKDB");
+	ROS_INFO("Service: initKDB");
 	if(!ends_with(req.filePath, ".dat") && !ends_with(req.filePath, ".clp")){
 		ROS_INFO("Load file %s: FAIL. Unsupported file format.", req.filePath.c_str());
 		return true;
@@ -254,9 +258,17 @@ bool Bridge::srvInitKDB(simulator::InitKDB::Request& req, simulator::InitKDB::Re
 
 
 // bool ← f(bool clear)
-bool Bridge::srvClearKDB(simulator::clearKDB::Request& req, simulator::clearKDB::Response& res){
-	ROS_INFO("Service: ClearKDB");
+bool Bridge::srvClearKDB(simulator::ClearKDB::Request& req, simulator::ClearKDB::Response& res){
+	ROS_INFO("Service: clearKDB");
 	if(!req.clear) return true;
 	clearCLIPS();
 	return res.cleared = true;
+}
+
+
+// bool ← f(void)
+bool Bridge::srvResetKDB(simulator::ResetKDB::Request& req, simulator::ResetKDB::Response& res){
+	ROS_INFO("Service: resetKDB");
+	resetCLIPS();
+	return res.result = true;
 }

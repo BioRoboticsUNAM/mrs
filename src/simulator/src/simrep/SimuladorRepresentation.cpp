@@ -27,9 +27,10 @@ ros::Publisher* SimuladorRepresentation::command_response(NULL);
 ros::Subscriber* SimuladorRepresentation::subClipsToRos(NULL);
 ros::ServiceClient* SimuladorRepresentation::cliSpechInterpretation(NULL);
 ros::ServiceClient* SimuladorRepresentation::cliStringInterpretation(NULL);
-ros::ServiceClient* SimuladorRepresentation::cliStrQueryKDB(NULL);
+ros::ServiceClient* SimuladorRepresentation::cliQueryKDB(NULL);
 ros::ServiceClient* SimuladorRepresentation::cliInitKDB(NULL);
 ros::ServiceClient* SimuladorRepresentation::cliClearKDB(NULL);
+ros::ServiceClient* SimuladorRepresentation::cliResetKDB(NULL);
 
 bool SimuladorRepresentation::busy_clips = false;
 movements SimuladorRepresentation::output;
@@ -47,9 +48,10 @@ SimuladorRepresentation::~SimuladorRepresentation(){
     delete command_sendAndRunCLIPS;
     delete cliSpechInterpretation;
     delete cliStringInterpretation;
-    delete cliStrQueryKDB;
+    delete cliQueryKDB;
     delete cliInitKDB;
     delete cliClearKDB;
+    delete cliResetKDB;
     delete command_response;
     delete subClipsToRos;
 }
@@ -66,9 +68,11 @@ void SimuladorRepresentation::setNodeHandle(ros::NodeHandle * nh) {
     command_sendAndRunCLIPS = new ros::Publisher(nh->advertise<std_msgs::String>("/planning_rm/command_sendAndRunCLIPS", 1));
     cliSpechInterpretation = new ros::ServiceClient(nh->serviceClient<simulator::planning_cmd>("/planning_rm/spr_interpreter"));
     cliStringInterpretation = new ros::ServiceClient(nh->serviceClient<simulator::planning_cmd>("/planning_rm/str_interpreter"));
-    cliStrQueryKDB = new ros::ServiceClient(nh->serviceClient<simulator::StrQueryKDB>("/planning_rm/str_query_KDB"));
-    cliInitKDB = new ros::ServiceClient(nh->serviceClient<simulator::InitKDB>("/planning_rm/init_kdb"));
-    cliClearKDB = new ros::ServiceClient(nh->serviceClient<simulator::clearKDB>("/planning_rm/clear_kdb"));
+
+    cliQueryKDB = new ros::ServiceClient(nh->serviceClient<simulator::QueryKDB>("/planning_rm/queryKDB"));
+    cliInitKDB = new ros::ServiceClient(nh->serviceClient<simulator::InitKDB>("/planning_rm/initKDB"));
+    cliClearKDB = new ros::ServiceClient(nh->serviceClient<simulator::ClearKDB>("/planning_rm/clearKDB"));
+    cliResetKDB = new ros::ServiceClient(nh->serviceClient<simulator::ResetKDB>("/planning_rm/resetKDB"));
     command_response = new ros::Publisher(nh->advertise<simulator::PlanningCmdClips>("/planning_rm/command_response", 1));
    
     subClipsToRos = new ros::Subscriber(nh->subscribe("/planning_rm/clips_to_ros", 1, callbackClipsToRos));
@@ -139,18 +143,17 @@ void SimuladorRepresentation::sendAndRunCLIPS(std::string command){
 }
 
 bool SimuladorRepresentation::strQueryKDB(std::string query, std::string &result, int timeout){
-    simulator::StrQueryKDB srv;
+    simulator::QueryKDB srv;
     bool success = true;
     if(timeout > 0)
-        success = ros::service::waitForService("/planning_rm/str_query_KDB", timeout);
+        success = ros::service::waitForService("/planning_rm/queryKDB", timeout);
     if (success) {
-        simulator::StrQueryKDB srv;
         srv.request.query = query;
-        if (cliStrQueryKDB->call(srv)) {
+        if (cliQueryKDB->call(srv)) {
             std::string queryResult = srv.response.result;
             std::cout << "SimuladorRepresentation.->Query Result:" << queryResult << std::endl;
             if(queryResult.compare("None") == 0){
-                std::cout << "SimuladorRepresentation.->The query not success." << std::endl;
+                std::cout << "SimuladorRepresentation.->Query failed." << std::endl;
                 result = "";
                 return false;
             }
@@ -158,30 +161,47 @@ bool SimuladorRepresentation::strQueryKDB(std::string query, std::string &result
             return true;
         }
     }
-    std::cout << "SimuladorRepresentation.->Failed to call service of str_query_kdb" << std::endl;
+    std::cout << "SimuladorRepresentation.->Failed to call service of queryKDB" << std::endl;
     return false;
 }
+
 
 bool SimuladorRepresentation::clearKDB(int timeout){
     bool success = true;
     if(timeout > 0)
-        success = ros::service::waitForService("/planning_rm/clear_kdb", timeout);
+        success = ros::service::waitForService("/planning_rm/clearKDB", timeout);
     if (success) {
-        simulator::clearKDB srv;
+        simulator::ClearKDB srv;
         srv.request.clear = true;
         if (cliClearKDB->call(srv)) {
             std::cout << "SimuladorRepresentation.->Clear KDB" << std::endl;
             return true;
         }
     }
-    std::cout << "SimuladorRepresentation.->Failed to call service of clear_kdb" << std::endl;
+    std::cout << "SimuladorRepresentation.->Failed to call service of clearKDB" << std::endl;
+    return false;
+}
+
+
+bool SimuladorRepresentation::resetKDB(int timeout){
+    bool success = true;
+    if(timeout > 0)
+        success = ros::service::waitForService("/planning_rm/resetKDB", timeout);
+    if (success) {
+        simulator::ResetKDB srv;
+        if (cliResetKDB->call(srv)) {
+            std::cout << "SimuladorRepresentation.->reset KDB" << std::endl;
+            return true;
+        }
+    }
+    std::cout << "SimuladorRepresentation.->Failed to call service of resetKDB" << std::endl;
     return false;
 }
 
 bool SimuladorRepresentation::initKDB(std::string filePath, bool run, float timeout){
     bool success = true;
     if(timeout > 0)
-        success = ros::service::waitForService("/planning_rm/init_kdb", timeout);
+        success = ros::service::waitForService("/planning_rm/initKDB", timeout);
     if (success) {
         simulator::InitKDB srv;
         srv.request.filePath = filePath;
@@ -191,7 +211,7 @@ bool SimuladorRepresentation::initKDB(std::string filePath, bool run, float time
             return true;
         }
     }
-    std::cout << "SimuladorRepresentation.->Failed to call service of init_kdb" << std::endl;
+    std::cout << "SimuladorRepresentation.->Failed to call service of initKDB" << std::endl;
     return false;
 }
 

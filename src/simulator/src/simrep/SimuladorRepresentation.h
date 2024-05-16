@@ -16,9 +16,10 @@
 
 #include "simulator/PlanningCmdClips.h"
 #include "simulator/planning_cmd.h"
-#include "simulator/StrQueryKDB.h"
+#include "simulator/QueryKDB.h"
 #include "simulator/InitKDB.h"
-#include "simulator/clearKDB.h"
+#include "simulator/ClearKDB.h"
+#include "simulator/ResetKDB.h"
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -49,12 +50,13 @@ class SimuladorRepresentation {
         static ros::Publisher * command_loadCLIPS;
         static ros::Publisher * command_sendAndRunCLIPS;
         static ros::Publisher * command_response;
-	static ros::Subscriber * subClipsToRos;
+    	static ros::Subscriber * subClipsToRos;
         static ros::ServiceClient * cliSpechInterpretation;
         static ros::ServiceClient * cliStringInterpretation;
-        static ros::ServiceClient * cliStrQueryKDB;
+        static ros::ServiceClient * cliQueryKDB;
         static ros::ServiceClient * cliInitKDB;
-	static ros::ServiceClient * cliClearKDB;
+        static ros::ServiceClient * cliClearKDB;
+        static ros::ServiceClient * cliResetKDB;
 
 
     public:
@@ -63,7 +65,7 @@ class SimuladorRepresentation {
 
         static void setNodeHandle(ros::NodeHandle * nh);
         static void runCLIPS(bool enable);
-	static void clearCLIPS(bool enable);
+	   static void clearCLIPS(bool enable);
         static void resetCLIPS(bool enable);
         static void factCLIPS(bool enable);
         static void ruleCLIPS(bool enable);
@@ -71,10 +73,11 @@ class SimuladorRepresentation {
         static void sendCLIPS(std::string command);
         static void loadCLIPS(std::string file);
         static void sendAndRunCLIPS(std::string command);
-        static bool initKDB(std::string filePath, bool run, float timeout);
-        static bool insertKDB(std::string nameRule, std::vector<std::string> params, int timeout);
-        static bool clearKDB(int timeout);
-        static bool strQueryKDB(std::string query, std::string &result, int timeout);
+        static bool initKDB(std::string filePath, bool run, float timeout = 1000);
+        static bool insertKDB(std::string nameRule, std::vector<std::string> params, int timeout = 1000);
+        static bool clearKDB(int timeout = 1000);
+        static bool resetKDB(int timeout = 1000);
+        static bool strQueryKDB(std::string query, std::string &result, int timeout = 1000);
 	static void callbackClipsToRos(const simulator::PlanningCmdClips::ConstPtr& msg);
 	static bool get_movement(float& advance, float&twist);
 	static void set_busy_clips(bool flag);

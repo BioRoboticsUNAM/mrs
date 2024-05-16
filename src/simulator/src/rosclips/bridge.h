@@ -10,9 +10,10 @@
 #include "clips_bridge.h"
 #include "queryrouter.h"
 
-#include "simulator/StrQueryKDB.h"
+#include "simulator/QueryKDB.h"
 #include "simulator/InitKDB.h"
-#include "simulator/clearKDB.h"
+#include "simulator/ClearKDB.h"
+#include "simulator/ResetKDB.h"
 
 class ClipsBridge;
 
@@ -44,9 +45,10 @@ private:
 	void cmdLoadCallback(std_msgs::String::ConstPtr const& msg);
 	void cmdSendAndRunCallback(std_msgs::String::ConstPtr const& msg);
 
-	bool srvQueryKDB(simulator::StrQueryKDB::Request& req, simulator::StrQueryKDB::Response& res);
+	bool srvQueryKDB(simulator::QueryKDB::Request& req, simulator::QueryKDB::Response& res);
 	bool srvInitKDB(simulator::InitKDB::Request& req, simulator::InitKDB::Response& res);
-	bool srvClearKDB(simulator::clearKDB::Request& req, simulator::clearKDB::Response& res);
+	bool srvClearKDB(simulator::ClearKDB::Request& req, simulator::ClearKDB::Response& res);
+	bool srvResetKDB(simulator::ResetKDB::Request& req, simulator::ResetKDB::Response& res);
 
 private:
 	QueryRouter& qr;

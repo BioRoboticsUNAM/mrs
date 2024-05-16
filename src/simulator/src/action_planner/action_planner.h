@@ -101,8 +101,7 @@ int start_clips_node_action_planner(){
  }
 
  //Function to RESET CLIPS
- SimuladorRepresentation::resetCLIPS(true);
- SimuladorRepresentation::resetCLIPS(true);
+ SimuladorRepresentation::resetKDB(2000);
 
  //Function to print facts 
  SimuladorRepresentation::factCLIPS(true);

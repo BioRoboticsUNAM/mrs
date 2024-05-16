@@ -1,3 +1,4 @@
 string filePath
 bool run
 ---
+bool result
