@@ -14,22 +14,22 @@
 
 #include "SimuladorRepresentation.h"
 
-ros::Publisher * SimuladorRepresentation::command_runCLIPS;
-ros::Publisher * SimuladorRepresentation::command_clearCLIPS;
-ros::Publisher * SimuladorRepresentation::command_resetCLIPS;
-ros::Publisher * SimuladorRepresentation::command_factCLIPS;
-ros::Publisher * SimuladorRepresentation::command_ruleCLIPS;
-ros::Publisher * SimuladorRepresentation::command_agendaCLIPS;
-ros::Publisher * SimuladorRepresentation::command_sendCLIPS;
-ros::Publisher * SimuladorRepresentation::command_loadCLIPS;
-ros::Publisher * SimuladorRepresentation::command_sendAndRunCLIPS;
-ros::Publisher * SimuladorRepresentation::command_response;
-ros::Subscriber * SimuladorRepresentation::subClipsToRos;
-ros::ServiceClient * SimuladorRepresentation::cliSpechInterpretation;
-ros::ServiceClient * SimuladorRepresentation::cliStringInterpretation;
-ros::ServiceClient * SimuladorRepresentation::cliStrQueryKDB;
-ros::ServiceClient * SimuladorRepresentation::cliInitKDB;
-ros::ServiceClient * SimuladorRepresentation::cliClearKDB;
+ros::Publisher* SimuladorRepresentation::command_runCLIPS(NULL);
+ros::Publisher* SimuladorRepresentation::command_clearCLIPS(NULL);
+ros::Publisher* SimuladorRepresentation::command_resetCLIPS(NULL);
+ros::Publisher* SimuladorRepresentation::command_factCLIPS(NULL);
+ros::Publisher* SimuladorRepresentation::command_ruleCLIPS(NULL);
+ros::Publisher* SimuladorRepresentation::command_agendaCLIPS(NULL);
+ros::Publisher* SimuladorRepresentation::command_sendCLIPS(NULL);
+ros::Publisher* SimuladorRepresentation::command_loadCLIPS(NULL);
+ros::Publisher* SimuladorRepresentation::command_sendAndRunCLIPS(NULL);
+ros::Publisher* SimuladorRepresentation::command_response(NULL);
+ros::Subscriber* SimuladorRepresentation::subClipsToRos(NULL);
+ros::ServiceClient* SimuladorRepresentation::cliSpechInterpretation(NULL);
+ros::ServiceClient* SimuladorRepresentation::cliStringInterpretation(NULL);
+ros::ServiceClient* SimuladorRepresentation::cliStrQueryKDB(NULL);
+ros::ServiceClient* SimuladorRepresentation::cliInitKDB(NULL);
+ros::ServiceClient* SimuladorRepresentation::cliClearKDB(NULL);
 
 bool SimuladorRepresentation::busy_clips = false;
 movements SimuladorRepresentation::output;

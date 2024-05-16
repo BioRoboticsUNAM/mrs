@@ -100,10 +100,11 @@ int main(int argc ,char **argv)
    // it sets the environment's path
     strcpy(path,"./src/simulator/src/data/");
   
+    params_act.behavior=10;
+    params_act.run=1;
 
 
-
-    printf("\n\n             PLANS EXECUTER %d \n________________________________\n",j++);
+    printf("\n\n             PLANS EXECUTER %d \n________________________________\n",params_act.behavior);
 
     while( ros::ok()  )
     {
@@ -129,14 +130,15 @@ int main(int argc ,char **argv)
 			break;
 
 		 case 10:
-
+                    	printf(" ******* SELECTION %d *******\n",params_act.behavior);
      			ros::spinOnce();
 
 			while(flg_once){
      			
+			    printf("\nInside case\n"); 
 			    ros::spinOnce();
 			    num_plan=num_plan+num_actions;
-               		    printf(" ******* Waiting for a new plan to be executed %d *******\n",num_plan);
+               		    printf("\n ******* Waiting for a new plan to be executed %d *******\n",num_plan);
                        	    num_actions=action_planner(params_act.robot_x, params_act.robot_y,params_act.robot_theta,&plan,num_plan);
 			    //flg_once=0;
 

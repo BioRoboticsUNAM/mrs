@@ -16,18 +16,21 @@
           (declare (salience 1000))
           (ros-node ?node)
         =>
-          (rospub ?node "Clips alive")
+          ;(rospub ?node "Clips alive")
+          (printout t "clips alive 0" crlf)
+          (rospub ?node "clips alive 0")
 )
 
 
 
-;(defrule clips-alive
-        ;?f <- (alive clips)
-	;(ros-node ?node)
-        ;=>
-        ;(retract ?f)
-	;(rospub ?node "Clips alive")
-;)
+(defrule clips-alive
+        ?f <- (alive clips)
+        (ros-node ?node)
+        =>
+        (retract ?f)
+        (printout t "clips alive 0" crlf)
+        (rospub ?node "clips alive 0")
+)
 
 
 ;(defrule clips-alive-finish

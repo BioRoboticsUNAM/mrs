@@ -88,15 +88,20 @@ int start_clips_node_action_planner(){
  // The third parameter is a timeout
  //file = "/src/expert_system/oracle.dat";
  //file = "/src/action_planner/ViRBot_Cubes_ROS/ROS_cubes.dat";
- file = "/src/action_planner/ViRBot_Cubes_ROS/ROS_virbot.dat";
+ //file = "src/simulator/src/action_planner/ViRBot_Cubes_ROS/ROS_virbot.dat";
+ file = "/home/dragon/Develop/catkin_ws-mrs/src/simulator/src/action_planner/ViRBot_Cubes_ROS/ROS_virbot.dat";
+ file = "/home/jesus/savage/clips_ros/Clips_Ros_Mauricio/mobileRobotSimulator-master/src/simulator/src/action_planner/ViRBot_Cubes_ROS/ROS_virbot.dat";
  std::cout << "CLIPS file: " << file  << std::endl;
  init_kdb = SimuladorRepresentation::initKDB(file, false, 2000);
+ init_kdb = 1;
+
  if(!init_kdb){
                 std::cout << "CLIPS error file not found: " << file  << std::endl;
                 return 0;
  }
 
  //Function to RESET CLIPS
+ SimuladorRepresentation::resetCLIPS(true);
  SimuladorRepresentation::resetCLIPS(true);
 
  //Function to print facts 
@@ -195,7 +200,9 @@ int action_planner(float px, float py, float theta, Actions *plan, int num_pl){
     if(init_flg==1){
 
        		// It starts the communication with the Clips node
+		printf("\n before start\n");
        		start_clips_node_action_planner();
+		printf("\n after start\n");
        		init_flg=0;
        		//strcpy(arm,"manipulator");
 
@@ -214,9 +221,14 @@ int action_planner(float px, float py, float theta, Actions *plan, int num_pl){
        		sscanf(result.c_str(),"%s %s %d",ROS_System,action,&flg_clp);
        		printf("ROS_System %s action %s flg_clp %d \n",ROS_System,action,flg_clp);
 		sleep(1.00);
+		printf("put a number -> ");
+		scanf("%d",&dummy);
 	//}
 
     }
+
+    printf("put a number again -> ");
+    scanf("%d",&dummy);
 
 
     SimuladorRepresentation::strQueryKDB("(assert (start action-planning))", result, 10000);

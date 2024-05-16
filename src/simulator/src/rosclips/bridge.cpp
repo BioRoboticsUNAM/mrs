@@ -52,9 +52,9 @@ std::string get_current_path(){
 Bridge::Bridge() : ClipsBridge(),
 	qr(QueryRouter::getInstance()){
 		qr.setLogicalNames(
-		clips::LogicalName::stdout   |
-		clips::LogicalName::wdisplay |
-		clips::LogicalName::wtrace
+		clips::LogicalName::stdout
+		// | clips::LogicalName::wdisplay
+		// | clips::LogicalName::wtrace
 	);
 }
 
@@ -168,32 +168,37 @@ void Bridge::cmdRunCallback(std_msgs::Bool::ConstPtr const& msg){
 
 
 void Bridge::cmdClearCallback(std_msgs::Bool::ConstPtr const& msg){
+	ROS_INFO("Command: Clear");
 	clearCLIPS();
 }
 
 
 void Bridge::cmdResetCallback(std_msgs::Bool::ConstPtr const& msg){
+	ROS_INFO("Command: Reset");
 	resetCLIPS();
 }
 
 
 void Bridge::cmdFactCallback(std_msgs::Bool::ConstPtr const& msg){
+	ROS_INFO("Command: Fact");
 	clips::printFacts();
 }
 
 
 void Bridge::cmdRuleCallback(std_msgs::Bool::ConstPtr const& msg){
+	ROS_INFO("Command: Rule");
 	clips::printRules();
 }
 
 
 void Bridge::cmdAgendaCallback(std_msgs::Bool::ConstPtr const& msg){
+	ROS_INFO("Command: Agenda");
 	clips::printAgenda();
 }
 
 
 void Bridge::cmdSendCLIPSCallback(std_msgs::String::ConstPtr const& msg){
-	// ROS_INFO("Command: Send");
+	ROS_INFO("Command: Send");
 	// clips.SendCommand(data.data, True) ->
 	// 	_c.sendCommand(command, verbose)
 	// clipsFunctions.PrintOutput()
@@ -202,7 +207,7 @@ void Bridge::cmdSendCLIPSCallback(std_msgs::String::ConstPtr const& msg){
 
 
 void Bridge::cmdSendAndRunCallback(std_msgs::String::ConstPtr const& msg){
-	// ROS_INFO("Command: SendAndRun");
+	ROS_INFO("Command: SendAndRun");
 	// clips.SendCommand(data.data, True) ->
 	// 	_c.sendCommand(command, verbose)
 	// clipsFunctions.PrintOutput()
@@ -214,7 +219,7 @@ void Bridge::cmdSendAndRunCallback(std_msgs::String::ConstPtr const& msg){
 
 
 void Bridge::cmdLoadCallback(std_msgs::String::ConstPtr const& msg){
-	// ROS_INFO("Command: Load");
+	ROS_INFO("Command: Load");
 	if(!ends_with(msg->data, ".dat") && !ends_with(msg->data, ".clp")){
 		ROS_INFO("Load file %s: FAIL. Unsupported file format.", msg->data.c_str());
 		return;
