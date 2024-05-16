@@ -1,4 +1,5 @@
 #!/bin/bash
+KDBPATH='src/simulator/src/action_planner/ViRBot_Cubes_ROS'
 #Script to start the ros simulations
 xterm -hold -e ". devel/setup.bash && roscore" &
 xterm -hold -e ". devel/setup.bash && roscd simulator/src/gui/ && python simulator_node.py" &
@@ -7,7 +8,7 @@ xterm -hold -e ". devel/setup.bash  && rosrun simulator light_node" &
 xterm -hold -e ". devel/setup.bash  && rosrun simulator laser_node" &
 xterm -hold -e ". devel/setup.bash  && rosrun simulator base_node" &
 xterm -hold -e ". devel/setup.bash  && rosrun simulator clipscontrol" &
-xterm -hold -e ". devel/setup.bash  && rosrun simulator rosclips" &
+xterm -hold -e ". devel/setup.bash  && rosrun simulator rosclips -d ${KDBPATH}" &
 xterm -hold -e ". devel/setup.bash  && rosrun simulator find_obj_node" &
 xterm -hold -e ". devel/setup.bash  && rosrun simulator manipulator_node" &
 xterm -hold -e ". devel/setup.bash  && rosrun simulator objs_viz_node" &
