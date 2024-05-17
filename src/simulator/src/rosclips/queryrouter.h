@@ -18,7 +18,7 @@ public:
 	 */
 	static QueryRouter& getInstance(
 		const std::string& routerName = "query",
-		clips::RouterPriority priority = clips::RouterPriority::StandardShared);
+		clips::RouterPriority priority = clips::RouterPriority::UniqueShared);
 
 // Disable copy constructor and copy assignation
 	QueryRouter(const QueryRouter&)    = delete;

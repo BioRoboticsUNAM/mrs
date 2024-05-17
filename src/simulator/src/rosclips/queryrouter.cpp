@@ -133,7 +133,6 @@ int queryFunction(char* logicalName){
 	QueryRouter& qr = QueryRouter::getInstance();
 	if(!qr.isEnabled()) return 0;
 
-	// return (qr.hasLogicalName(logicalName)) ? 1 : 0;
 	return qr.hasLogicalName(logicalName);
 }
 
@@ -143,16 +142,22 @@ formation to our trace file. The print function for our router is
 defined below.
 */
 int printFunction(char *logicalName, char *str){
+	static std::set<std::string> clpln = { "stdin", "stdout", "wclips", "wdialog", "wdisplay", "werror", "wwarning", "wtrace" };
+
 	QueryRouter& qr = QueryRouter::getInstance();
+	if(!qr.hasLogicalName(logicalName)) return 0;
 	if(!qr.isEnabled()){
-		clips::print(logicalName, str);
+		if(clpln.count(logicalName) > 0)
+			clips::print(logicalName, str);
 		return true;
 	}
 
 	qr.write(str);
-	clips::deactivateRouter(qr.getName());
-	clips::print(logicalName, str);
-	clips::activateRouter(qr.getName());
+	if(clpln.count(logicalName) > 0){
+		clips::deactivateRouter(qr.getName());
+		clips::print(logicalName, str);
+		clips::activateRouter(qr.getName());
+	}
 	return true;
 }
 
@@ -161,6 +166,6 @@ When we exit CLIPS the trace file needs to be closed.
 function for our router is defined below.
 */
 int exitFunction(int exitCode){
-	return true;
+	return 1;
 }
 
