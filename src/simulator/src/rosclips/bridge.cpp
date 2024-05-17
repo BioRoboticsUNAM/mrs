@@ -235,11 +235,18 @@ void Bridge::cmdLoadCallback(std_msgs::String::ConstPtr const& msg){
 
 //string ← f(string query)
 bool Bridge::srvQueryKDB(simulator::QueryKDB::Request& req, simulator::QueryKDB::Response& res){
+	std::istringstream input;
 	qr.enable();
 	clips::sendCommand(req.query, true);
 	clips::run();
-	res.result = qr.read();
+	input.str(qr.read());
 	qr.disable();
+	// Clean output
+	for (std::string line; std::getline(input, line);){
+		if (line.rfind("ROS ", 0) != 0) continue;
+		res.result+= line.substr(4) + "\n";
+	}
+
 	return true;
 }
 
