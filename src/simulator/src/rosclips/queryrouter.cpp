@@ -131,8 +131,6 @@ name. The recognizer function for our router is defined below.
 */
 int queryFunction(char* logicalName){
 	QueryRouter& qr = QueryRouter::getInstance();
-	if(!qr.isEnabled()) return 0;
-
 	return qr.hasLogicalName(logicalName);
 }
 
