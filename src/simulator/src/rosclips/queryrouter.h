@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <set>
 #include <string>
 #include "clipswrapper.h"
 
@@ -60,14 +61,19 @@ public:
 	clips::RouterPriority getPriority();
 
 	/**
-	 * Retrieves the OR-ed set of logical names captured by this router
+	 * Checks whether the provided logical is captured/supported by this router
 	 */
-	clips::LogicalName getLogicalNames();
+	bool hasLogicalName(const std::string& ln);
 
 	/**
-	 * Sets the OR-ed set of logical names to be captured by this router
+	 * Add a logical names to the set being captured by this router
 	 */
-	void setLogicalNames(const clips::LogicalName& flags);
+	void addLogicalName(const std::string& ln);
+
+	/**
+	 * Removes a logical names from the set captured by this router
+	 */
+	void removeLogicalName(const std::string& ln);
 
 	/**
 	 * Returns the data in the buffer.
@@ -96,7 +102,7 @@ private:
 	bool enabled;
 	bool registered;
 	std::string routerName;
-	clips::LogicalName lnFlags;
+	std::set<std::string> logicalNames;
 	clips::RouterPriority priority;
 	std::string buffer;
 };

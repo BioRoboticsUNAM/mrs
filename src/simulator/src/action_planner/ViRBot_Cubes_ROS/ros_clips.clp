@@ -17,7 +17,7 @@
           (ros-node ?node)
         =>
           ;(rospub ?node "Clips alive")
-          (printout t "ROS clips alive 0" crlf)
+          (printout ROS "clips alive 0" crlf)
           (rospub ?node "clips alive 0")
 )
 
@@ -28,7 +28,7 @@
         (ros-node ?node)
         =>
         (retract ?f)
-        (printout t "ROS clips alive 0" crlf)
+        (printout ROS "clips alive 0" crlf)
         (rospub ?node "clips alive 0")
 )
 

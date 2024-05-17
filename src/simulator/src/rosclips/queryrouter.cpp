@@ -59,12 +59,18 @@ bool QueryRouter::isEnabled(){
 }
 
 
-clips::LogicalName QueryRouter::getLogicalNames(){
-	return lnFlags;
+bool QueryRouter::hasLogicalName(const std::string& ln){
+	return logicalNames.count(ln) > 0;
 }
 
-void QueryRouter::setLogicalNames(const clips::LogicalName& flags){
-	lnFlags = (clips::LogicalName)((int)flags & ~(int)clips::LogicalName::stdin);
+void QueryRouter::addLogicalName(const std::string& ln){
+	if( !hasLogicalName(ln) )
+		logicalNames.insert(ln);
+}
+
+void QueryRouter::removeLogicalName(const std::string& ln){
+	if( hasLogicalName(ln) )
+		logicalNames.erase(ln);
 }
 
 
@@ -126,23 +132,9 @@ name. The recognizer function for our router is defined below.
 int queryFunction(char* logicalName){
 	QueryRouter& qr = QueryRouter::getInstance();
 	if(!qr.isEnabled()) return 0;
-	int result = 0;
 
-	if( (qr.getLogicalNames() & clips::LogicalName::stdout  ) == clips::LogicalName::stdout   )
-		result |= !strcmp(logicalName, "stdout");
-	if( (qr.getLogicalNames() & clips::LogicalName::wclips  ) == clips::LogicalName::wclips   )
-		result |= !strcmp(logicalName, "wclips");
-	if( (qr.getLogicalNames() & clips::LogicalName::wdialog ) == clips::LogicalName::wdialog  )
-		result |= !strcmp(logicalName, "wdialog");
-	if( (qr.getLogicalNames() & clips::LogicalName::wdisplay) == clips::LogicalName::wdisplay )
-		result |= !strcmp(logicalName, "wdisplay");
-	if( (qr.getLogicalNames() & clips::LogicalName::werror  ) == clips::LogicalName::werror   )
-		result |= !strcmp(logicalName, "werror");
-	if( (qr.getLogicalNames() & clips::LogicalName::wwarning) == clips::LogicalName::wwarning )
-		result |= !strcmp(logicalName, "wwarning");
-	if( (qr.getLogicalNames() & clips::LogicalName::wtrace  ) == clips::LogicalName::wtrace   )
-		result |= !strcmp(logicalName, "wtrace");
-	return result;
+	// return (qr.hasLogicalName(logicalName)) ? 1 : 0;
+	return qr.hasLogicalName(logicalName);
 }
 
 /*
@@ -152,7 +144,10 @@ defined below.
 */
 int printFunction(char *logicalName, char *str){
 	QueryRouter& qr = QueryRouter::getInstance();
-	if(!qr.isEnabled()) return clips::print(logicalName, str);
+	if(!qr.isEnabled()){
+		clips::print(logicalName, str);
+		return true;
+	}
 
 	qr.write(str);
 	clips::deactivateRouter(qr.getName());

@@ -51,11 +51,11 @@ std::string get_current_path(){
 * *** *******************************************************/
 Bridge::Bridge() : ClipsBridge(),
 	qr(QueryRouter::getInstance()){
-		qr.setLogicalNames(
-		clips::LogicalName::stdout
-		// | clips::LogicalName::wdisplay
-		// | clips::LogicalName::wtrace
-	);
+		qr.addLogicalName("ROS");
+		qr.addLogicalName("ros");
+		// qr.addLogicalName("stdout");
+		// qr.addLogicalName("wdisplay");
+		// qr.addLogicalName("wtrace");
 }
 
 
@@ -235,18 +235,11 @@ void Bridge::cmdLoadCallback(std_msgs::String::ConstPtr const& msg){
 
 //string ← f(string query)
 bool Bridge::srvQueryKDB(simulator::QueryKDB::Request& req, simulator::QueryKDB::Response& res){
-	std::istringstream input;
 	qr.enable();
 	clips::sendCommand(req.query, true);
 	clips::run();
-	input.str(qr.read());
+	res.result = qr.read();
 	qr.disable();
-	// Clean output
-	for (std::string line; std::getline(input, line);){
-		if (line.rfind("ROS ", 0) != 0) continue;
-		res.result+= line.substr(4) + "\n";
-	}
-
 	return true;
 }
 
