@@ -117,6 +117,7 @@ class MobileRobotSimulator(threading.Thread):
 	def get_parameters(self): # It returns the parameters of simulation to be publish by a ROS topic
 		return self.__q.get(block=True, timeout=1000)
 
+
 	def _update_parameters_q(self):
 		if self.__q.full(): # Discard
 			try:
@@ -125,6 +126,7 @@ class MobileRobotSimulator(threading.Thread):
 				pass
 		self.__q.put(self._get_parameters)
 		self.root.after(100, self._update_parameters_q)
+
 
 	def _get_parameters(self): # It returns the parameters of simulation to be publish by a ROS topic
 		parameters = []
@@ -367,7 +369,17 @@ class MobileRobotSimulator(threading.Thread):
 			wmap = worldmap.fromFile(map_file)
 			self.mapX = wmap.width
 			self.mapY = wmap.height
+			scaleX = self.canvasX / wmap.width
+			scaleY = self.canvasY / wmap.height
+
 			self.print_grid()
+
+			for p in wmap.polygons:
+				vertices = p.getScaledVertices(scaleX, scaleY)
+				mirroryv = [ (self.canvasY - v[1], v[0]) for v in vertices ]
+				poly = self.w.create_polygon(mirroryv, outline=self.obstaclesOutlineColor, fill=self.obstacleInnerColor, width=1)
+				self.w.create_text( vertices[0], text=str(p.name) )
+
 			# vertex_x = [ ( ( self.canvasX * float(x) ) / self.mapX ) for x in words[4:len(words)-1:2]	]
 			# vertex_y = [ ( self.canvasY -  ( self.canvasY * float(y) ) / self.mapY ) for y in words[5:len(words)-1:2]	]
 			# vertex_y_calculus = [ (( self.canvasY * float(y) ) / self.mapY ) for y in words[5:len(words)-1:2]	]
@@ -376,13 +388,10 @@ class MobileRobotSimulator(threading.Thread):
 			# vy = [ float(y)for y in words[5:len(words)-1:2] ]
 
 			# vertices = zip( vertex_x , vertex_y)
-			# self.polygons.append( zip( vertex_x, vertex_y_calculus) )
-			# print('vertex_x:', vertex_x)
-			# print('vertex_y:', vertex_y)
-			# print('Polygon:', str(vertices), flush=True)
+				self.polygons.append( vertices )
 
 			# poly = self.w.create_polygon(vertices, outline=self.obstaclesOutlineColor, fill=self.obstacleInnerColor, width=1)
-			# self.polygonMap.append(poly)
+				self.polygonMap.append(poly)
 			# self.w.create_text( self.canvasX * float(words[4]) / self.mapX,  self.canvasY -  ( self.canvasY * float(words[5]) ) / self.mapY, text=str(pp))
 			# max_x = 0;
 			# max_y = 0;

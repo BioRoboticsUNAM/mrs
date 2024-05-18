@@ -27,6 +27,12 @@ class Polygon:
 		return self._vtcs
 	#end def
 
+
+	def getScaledVertices(self, sx, sy):
+		return [ (v[0]*sx, v[1]*sy) for v in self.vertices ]
+	#end def
+
+
 	def __str__(self):
 		vtcs = ', '.join([ f'{v}' for v in self.vertices ])
 		return f'{self.name} ({self.type}, {vtcs})'
