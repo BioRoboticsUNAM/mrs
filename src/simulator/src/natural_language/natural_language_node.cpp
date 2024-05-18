@@ -11,7 +11,6 @@
 ************************************************/
 
 #include "ros/ros.h"
-#include "ros/package.h"
 #include <iostream>
 #include <vector>
 #include <ctime>
@@ -38,7 +37,7 @@ int start_clips(){
  // The third parameter is a timeout
  //file = "/src/expert_system/oracle.dat";
 // file = "/src/action_planner/ViRBot_Cubes_ROS/objects_deftemplates.dat";
- file = ros::package::getPath("simulator") + "/src/action_planner/ViRBot_Cubes_ROS/ROS_virbot.dat";
+ file = "/src/action_planner/ViRBot_Cubes_ROS/ROS_virbot.dat";
  init_kdb = SimuladorRepresentation::initKDB(file, false, 2000);
  if(!init_kdb){
                 std::cout << "CLIPS error file not found: " << file  << std::endl;
@@ -93,34 +92,34 @@ int main(int argc ,char **argv)
 
  printf("\n ************* Natural Language Node ***************************\n");
  printf("The commands are send to the Action Planner CLIPS node\n");
- printf("Examples: \natrans (actor robot)(obj book)(to father))\n");
- printf("ptrans (actor robot)(obj robot)(to service))\n");
- printf("ptrans (actor robot)(obj robot)(to kitchen))\n");
- printf("ptrans (actor robot)(obj book)(to bedroom))\n");
- printf("ptrans (actor robot)(obj milk)(to kitchen))\n");
- printf("ptrans (actor robot)(obj shampoo)(to service))\n");
- printf("ptrans (actor robot)(obj robot)(to mother))\n");
- printf("\nptrans (actor robot)(obj robot)(to studio))\n");
- printf("atrans (actor robot)(obj book)(to mother))\n");
- printf("attend (actor robot)(obj mother)(from studio))\n");
+ printf("Examples: \natrans (actor robot)(obj book)(to father)\n");
+ printf("ptrans (actor robot)(obj robot)(to service)\n");
+ printf("ptrans (actor robot)(obj robot)(to kitchen)\n");
+ printf("ptrans (actor robot)(obj book)(to bedroom)\n");
+ printf("ptrans (actor robot)(obj milk)(to kitchen)\n");
+ printf("ptrans (actor robot)(obj shampoo)(to service)\n");
+ printf("ptrans (actor robot)(obj robot)(to mother)\n");
+ printf("\nptrans (actor robot)(obj robot)(to studio)\n");
+ printf("atrans (actor robot)(obj book)(to mother)\n");
+ printf("attend (actor robot)(obj mother)(from studio)\n");
  printf("num-sentences 3\n");
- printf("\nptrans (actor robot)(obj robot)(to deposit))\n");
- printf("atrans (actor robot)(obj hammer)(to father))\n");
- printf("attend (actor robot)(obj father)(from kitchen))\n");
+ printf("\nptrans (actor robot)(obj robot)(to deposit)\n");
+ printf("atrans (actor robot)(obj hammer)(to father)\n");
+ printf("attend (actor robot)(obj father)(from kitchen)\n");
  printf("num-sentences 3\n");
- printf("\nptrans (actor robot)(obj orange)(to kitchen))\n");
- printf("state (attribute location)(obj orange)(value bedroom))\n");
- printf("\nqtrans (obj mother)(question where))\n");
- printf("qtrans (obj shampoo)(question where))\n");
- printf("qtrans (obj book)(question who))\n");
+ printf("\nptrans (actor robot)(obj orange)(to kitchen)\n");
+ printf("state (attribute location)(obj orange)(value bedroom)\n");
+ printf("\nqtrans (obj mother)(question where)\n");
+ printf("qtrans (obj shampoo)(question where)\n");
+ printf("qtrans (obj book)(question who)\n");
  printf("num-sentences 1\n");
- printf("\natrans (actor robot)(obj book))\n");
+ printf("\natrans (actor robot)(obj book)\n");
  printf("num-sentences 1\n");
- printf("state (attribute recipient)(value father))\n");
+ printf("state (attribute recipient)(value father)\n");
  printf("num-sentences 1\n");
- printf("\natrans (actor robot)(to father))\n");
+ printf("\natrans (actor robot)(to father)\n");
  printf("num-sentences 1\n");
- printf("state (attribute object)(value book))\n");
+ printf("state (attribute object)(value book)\n");
  printf("num-sentences 1\n");
 
  while(1){

@@ -16,14 +16,24 @@
           (declare (salience 1000))
           (ros-node ?node)
         =>
-          ;(rospub ?node "Clips alive")
           (printout ROS "clips alive 0" crlf)
           (rospub ?node "clips alive 0")
 )
 
 
 
+;(defrule clips-alive
+        ;?f <- (alive clips)
+	;(ros-node ?node)
+        ;=>
+        ;(retract ?f)
+        ;(rospub ?node "clips alive 0")
+;)
+
+
+
 (defrule clips-alive
+	(declare (salience -900))
         ?f <- (alive clips)
         (ros-node ?node)
         =>
@@ -62,9 +72,8 @@
         (retract ?f ?f1)
         ;(retract ?f1)
 	(bind ?var (str-cat ?system " num_plans-total " ?npl " " ?num " " ?t " "  ?n))
-        ;(printout t "ROS " ?system " num_plans-total " ?npl " " ?num " " ?t " ROS")
 	(rospub ?node ?var)
-	(printout t "message send " ?var crlf)
+	(printout ROS ?var crlf)
 )
 
 
@@ -75,10 +84,9 @@
         ?f1 <- (send-ROS ?system num_plans-number ?npl ?num ?t ?n)
         =>
         (retract ?f ?f1)
-        ;(printout t "ROS " ?system " num_plans-number " ?npl " " ?num " " ?t " ROS")
         ( bind ?var (str-cat ?system " num_plans-number " ?npl " " ?num " " ?t ))
 	(rospub ?node ?var)
-	(printout t "message send " ?var crlf)
+	(printout ROS ?var crlf)
 )
 
 
@@ -98,10 +106,9 @@
         ?f1 <- (send-ROS ?system ?id&:(neq ?id num_plans-total) ?nm ?action ?arg1 ?arg2)
         =>
         (retract ?f1)
-        ;(printout t "ROS " ?system " plan " ?id " " ?nm " " ?action " " ?arg1 " " ?arg2 " ROS")
         (bind ?var (str-cat ?system " plan " ?id " " ?nm " " ?action " " ?arg1 " " ?arg2 ))
 	(rospub ?node ?var)
-	(printout t "message send " ?var crlf)
+	(printout ROS ?var crlf)
 )
 
 
@@ -112,9 +119,8 @@
         =>
         (retract ?f1)
 	(bind ?var (str-cat ?system " plan " ?id " " ?nm " " ?action " "  ?argument))
-        ;(printout t "ROS " ?system " plan " ?id " " ?nm " " ?action " "  ?argument " ROS")
 	(rospub ?node ?var)
-	(printout t "message send " ?var crlf)
+	(printout ROS ?var crlf)
 )
 
 (defrule send-plan-three-arguments
@@ -123,10 +129,9 @@
         ?f1 <- (send-ROS ?system ?id ?nm ?action ?arg1 ?arg2 ?arg3)
         =>
         (retract ?f1)
-        ;(printout t "ROS " ?system " plan " ?id " " ?nm " " ?action " "  ?arg1 " " ?arg2 " " ?arg3  " ROS")
         (bind ?var (str-cat ?system " plan " ?id " " ?nm " " ?action " "  ?arg1 " " ?arg2 " " ?arg3))
 	(rospub ?node ?var)
-	(printout t "message send " ?var crlf)
+	(printout ROS ?var crlf)
 )
 
 

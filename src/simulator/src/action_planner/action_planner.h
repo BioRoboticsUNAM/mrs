@@ -101,7 +101,8 @@ int start_clips_node_action_planner(){
  }
 
  //Function to RESET CLIPS
- SimuladorRepresentation::resetKDB(2000);
+ SimuladorRepresentation::resetCLIPS(true);
+ SimuladorRepresentation::resetCLIPS(true);
 
  //Function to print facts 
  SimuladorRepresentation::factCLIPS(true);
@@ -180,6 +181,7 @@ int action_planner(float px, float py, float theta, Actions *plan, int num_pl){
     char str[300];
     char action[30];
     char ROS_System[30];
+    char fact[60];
     char room[30];
     char zone[30];
     static float x,y,z=0.0;
@@ -214,36 +216,42 @@ int action_planner(float px, float py, float theta, Actions *plan, int num_pl){
 	 
 	//if( params_act.run ){                 // Check if the simulation continues
 
+		//printf("put a number -> ");
+		////scanf("%d",&dummy);
        		//Function to asserting a fact to the clips node to check if Clips is alive
        		SimuladorRepresentation::strQueryKDB("(assert (alive clips))", result, 10000);
        		std::cout << "CLIPS answer alive: " << result << std::endl;
+       		//sscanf(result.c_str(),"%s %s %s %d",fact,ROS_System,action,&flg_clp);
+       		//printf("Fact %s ROS_System %s action %s flg_clp %d \n",fact,ROS_System,action,flg_clp);
        		sscanf(result.c_str(),"%s %s %d",ROS_System,action,&flg_clp);
        		printf("ROS_System %s action %s flg_clp %d \n",ROS_System,action,flg_clp);
 		sleep(1.00);
-		printf("put a number -> ");
-		scanf("%d",&dummy);
+		//printf("put a number -> ");
+		//scanf("%d",&dummy);
 	//}
 
     }
 
-    printf("put a number again -> ");
-    scanf("%d",&dummy);
+    //SimuladorRepresentation::strQueryKDB("(assert (start action-planning))", result, 10000);
+    //std::cout << "CLIPS answer: " << result << std::endl;
 
-
-    SimuladorRepresentation::strQueryKDB("(assert (start action-planning))", result, 10000);
-    std::cout << "CLIPS answer: " << result << std::endl;
-
+    //printf("put a number again 1-> ");
+    //scanf("%d",&dummy);
     sprintf(str,"(assert (get-num-plans-total))");
     printf("\nSend fact %s\n",str);
     SimuladorRepresentation::strQueryKDB(str, result, 10000);
     printf("\nCLIPS answer: %d %s\n",i,result.c_str());
-
     sscanf(result.c_str(),"%s %s",ROS_System,action);
     printf("ROS_System %s action %s \n",ROS_System,action);
+    sscanf(result.c_str(),"%s %s %d %d",ROS_System,action,&num_plan_actual,&num_actions);
+    printf("ROS_System %s action %s num_plan_actual %d num_actions %d\n",ROS_System,action,num_plan_actual,num_actions);
+
+    //printf("put a number again 2 -> ");
+    //scanf("%d",&dummy);
 
     if(strcmp(action,"num_plans-total")==0){
 
-	   sscanf(result.c_str(),"%s %s %d %d",ROS_System,action,&num_plan_actual,&num_actions);
+	   sscanf(result.c_str(),"%s %s %s %d %d",fact,ROS_System,action,&num_plan_actual,&num_actions);
 
 
 	   for(i=num_pl;i < num_actions+num_pl;i++){

@@ -12,20 +12,28 @@
 
 (defglobal ?*plan_number_new* = 0)
 
-(defrule send-num_plans-total
+(defrule finish-plan
         (declare (salience 100))
         ?f <- (alive clips)
         ?f1 <- (finish-planner ?name ?num_pln ?n)
-	;(attempt (id ?num_pl) (number ?n) (status nil))
+	(ros-node ?node)
         =>
 	(retract ?f ?f1)
-	(bind ?*plan_number_new* 0)
-        (printout t "ROS clips alive 1 ROS")
-        (printout t "send num-plans-total " ?num_pln  crlf)
-        (assert (send-ROS ACT-PLN num_plans-total ?num_pln ?n 1.0 1))
-	;(assert (send-plan ?name ?num_pln ?n))
+        (assert (finish ?name ?num_pln ?n))
+	(rospub ?node "clips alive 1")
+        (printout ROS "clips alive 1" crlf)
 )
 
+(defrule send-num_plans-total
+        ?f1 <- (finish ?name ?num_pln ?n)
+	?f <- (get-num-plans-total)
+        (ros-node ?node)
+        =>
+        (retract ?f1)
+        (bind ?*plan_number_new* 0)
+        ;(printout t "send num-plans-total " ?num_pln  crlf)
+        (assert (send-ROS ACT-PLN num_plans-total ?num_pln ?n 1.0 1))
+)
 
 
 
@@ -34,7 +42,7 @@
 	(get-num-plans-number ?npl)
         (attempt (id ?npl) (number ?n) (status nil))
         =>
-        (printout t "send plans number " ?npl " " ?n  crlf)
+        ;(printout t "send plans number " ?npl " " ?n  crlf)
         (assert (send-ROS ACT-PLN num_plans-number ?npl ?n 1.0 4))
 )
 
@@ -55,7 +63,8 @@
 	?f1 <- (plan (name ?name) (id ?id) (number ?n))
         =>
         (retract ?f ?f1)
-        (printout t "ROS " " fulfilled plan number " ?id " " ?n " ROS")
+        ;(printout t "fulfilled plan number " ?id " " ?n)
+	(assert (send-ROS "fulfilled plan number " ?id " " ?n))
 )
 
 
@@ -67,7 +76,7 @@
         =>
 	(retract ?f)
 	(modify ?f1 (status active))
-        (printout t "send plan " $?arguments  crlf)
+        ;(printout t "send plan " $?arguments  crlf)
         (assert (send-ROS ACT-PLN ?id ?num $?arguments ))
 	;(assert (send-plan ?name ?id (- ?num 1)))
 )
@@ -128,7 +137,7 @@
         =>
         (bind ?command (str-cat "" ?room " " ?zone " " ?x " " ?y ""))
         ;(bind ?command (str-cat "" ?room " " ?zone""))
-	(printout t "goto " ?command  crlf)
+	;(printout t "goto " ?command  crlf)
 
         ;(assert (send-ROS ACT-PLN goto ?command ?t 4))
 )
@@ -151,7 +160,7 @@
         ?f1 <- (item (name ?obj) (zone ?zone)(pose ?x ?y ?z))
         =>
         (bind ?command (str-cat "" ?zone " " ?x " " ?y " " ?z""))
-        (printout t "go " ?command  crlf)
+        ;(printout t "go " ?command  crlf)
         (assert (send-ROS ACT-PLN go ?command ?t 4))
 )
 
@@ -171,7 +180,7 @@
         =>
         ;(bind ?command (str-cat "" ?distance " " ?angle""))
         (bind ?command (str-cat "" ?x " " ?y""))
-        (printout t "mv " ?command  crlf)
+        ;(printout t "mv " ?command  crlf)
         (assert (send-ROS ACT-PLN mv ?command ?t 4))
 )
 
