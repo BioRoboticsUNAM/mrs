@@ -73,6 +73,7 @@ int main(int argc ,char **argv)
     int action_goto=0;
     int flg_executing_goto=0;
     int plan_num,id;
+    int dummy;
 
 
 
@@ -109,7 +110,8 @@ int main(int argc ,char **argv)
 
     printf("\n\n             MOTION PLANNER \n________________________________\n");
 
-
+    params.behavior=10;
+    params.run=1;
 
     while( ros::ok()  )
     {
@@ -122,6 +124,8 @@ int main(int argc ,char **argv)
             // it gets sensory data
             ros::spinOnce();
 
+	    printf("put a number again 1 -> ");
+            scanf("%d",&dummy);
             if (!params.useRealRobot)
             {
                 get_light_values(&intensity,light_readings); // function in ~/catkin_ws/src/simulator/src/motion_planner/motion_planner_utilities.h
@@ -345,6 +349,11 @@ int main(int argc ,char **argv)
 		if(action_data != 0){
 		    if(flg_executing_goto == 0){
 
+
+			printf("put a number again 2 -> ");
+           	        scanf("%d",&dummy);
+
+
 			printf("Movement to be executed action_data %d %s\n",action_data,Action_Planner);
 
 			//ACT-PLN plan 1 1 goto corridor deposit 
@@ -491,7 +500,12 @@ int main(int argc ,char **argv)
 
             flg_noise = params.noise;
 
+	    printf("put a number again 2 -> ");
+            scanf("%d",&dummy);
+
             move_robot(movements.twist,movements.advance,lidar_readings);
+	    printf("put a number again 3 -> ");
+            scanf("%d",&dummy);
             ros::spinOnce();
             new_simulation = 0;
             r.sleep();

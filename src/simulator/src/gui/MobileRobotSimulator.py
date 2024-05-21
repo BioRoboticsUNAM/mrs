@@ -112,6 +112,7 @@ class MobileRobotSimulator(threading.Thread):
 		self.initY = 0
 		self.initR = 0
 
+		self.steps_ = 0
 		self.steps_aux = 0
 		self.posible_collision = [None] * 512;
 		self.sensors_value = [None] * 512 
