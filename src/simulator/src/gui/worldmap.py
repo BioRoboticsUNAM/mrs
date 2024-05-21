@@ -127,7 +127,6 @@ def __parseLine(line: str, wmap: WorldMap):
 
 
 def __parseDimensions(wmap, match):
-	print('__parseDimensions')
 	wmap._name   = match.group('roomName')
 	wmap._width  = float(match.group('roomWidth'))
 	wmap._height = float(match.group('roomHeight'))

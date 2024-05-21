@@ -9,11 +9,15 @@ from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from tf.transformations import euler_from_quaternion 
 import tf
+import sys
 import time
 import rospy
+import signal
+from threading import Thread, RLock
 from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
 
-gui=MobileRobotSimulator()
+gui = None
+guiMutex = RLock()
 
 def turtle_odometry(msg):
 	quaternion = (
@@ -26,15 +30,21 @@ def turtle_odometry(msg):
 	roll = euler[0]
 	pitch = euler[1]
 	yaw = euler[2]
-	gui.handle_turtle(msg.pose.pose.position.x,msg.pose.pose.position.y,yaw)
+	with guiMutex:
+		if gui is None: return None
+		gui.handle_turtle(msg.pose.pose.position.x,msg.pose.pose.position.y,yaw)
 	#msg.pose.pose.position
 	
+
 def handle_simulator_object_interaction(req):
 	print(req)
 	resp = simulator_object_interactionResponse()
-	resp.done = gui.handle_simulator_object_interaction(req.grasp,req.name)
-	print(gui.objects_data)
+	with guiMutex:
+		if gui is None: return None
+		resp.done = gui.handle_simulator_object_interaction(req.grasp,req.name)
+		print(gui.objects_data)
 	return resp
+
 
 def convertArray2Pose(objects_data):
 	arrayPosesObjs = PosesArray();
@@ -46,43 +56,57 @@ def convertArray2Pose(objects_data):
 		arrayPosesObjs.posesArray.append(tmp)
 	return arrayPosesObjs
 
+
 def update_value(msg):
-	gui.handle_hokuyo(msg.ranges)
+	with guiMutex:
+		if gui is None: return None
+		gui.handle_hokuyo(msg.ranges)
 	ranges=msg.ranges
 
-def handle_simulator_set_light_position(req):
 
+def handle_simulator_set_light_position(req):
 	resp = simulator_set_light_positionResponse()
-	gui.set_light_position(req.light_x,req.light_y)
+	with guiMutex:
+		if gui is None: return None
+		gui.set_light_position(req.light_x,req.light_y)
 	return resp
+
 
 def handle_simulator_stop(req):
 
 	resp = simulator_stopResponse()
-	gui.s_t_simulation(False)
+	with guiMutex:
+		if gui is None: return None
+		gui.s_t_simulation(False)
 	return resp
 
 
 def handle_robot_step(req):
-
 	resp = simulator_robot_stepResponse()
-	gui.sensors_values_aux = req.sensors;
-	gui.handle_service(req.theta,req.distance)
-	parameters = gui.get_parameters()
+	with guiMutex:
+		if gui is None: return None
+		gui.sensors_values_aux = req.sensors;
+		gui.handle_service(req.theta, req.distance)
+		parameters = gui.get_parameters()
 	resp.robot_x = parameters[0]
 	resp.robot_y = parameters[1]
 	resp.theta = parameters[2]
 	return resp
 
-def handle_print_graph(req):
 
+def handle_print_graph(req):
 	resp = simulator_algorithm_resultResponse()
-	gui.handle_print_graph(req.nodes_algorithm)
+	with guiMutex:
+		if gui is None: return None
+		gui.handle_print_graph(req.nodes_algorithm)
 	resp.success=1;
 	return resp
 
-def ros():
 
+def setup_ros():
+	global rate, a, b, c, d, e
+	global odom_pub, objPose_pub, pub_params
+	global odom_broadcaster
 	rospy.init_node('simulator_gui_node')
 	a = rospy.Service('simulator_robot_step', simulator_robot_step, handle_robot_step)
 	b = rospy.Service('simulator_print_graph', simulator_algorithm_result, handle_print_graph)
@@ -92,11 +116,20 @@ def ros():
 	
 	#rospy.Subscriber('/scan',LaserScan,update_value,queue_size=1)
 	#rospy.Subscriber('/odom',Odometry, turtle_odometry ,queue_size=1)
+	#rospy.Subscriber("simulator_laser_pub", Laser_values, callback)
 
 	odom_pub = rospy.Publisher("/odom_simul", Odometry, queue_size=50)
 	objPose_pub = rospy.Publisher("/objectsPose", PosesArray, queue_size=5)
+	pub_params = rospy.Publisher('simulator_parameters_pub', Parameters, queue_size = 0)
+
 	odom_broadcaster = tf.TransformBroadcaster()
 
+	rate = rospy.Rate(100)
+#end def
+
+
+def ros_poll():
+	time.sleep(3)
 	x = 0.0
 	y = 0.0
 	th = 0.0
@@ -107,16 +140,15 @@ def ros():
 	current_time = rospy.Time.now()
 	last_time = rospy.Time.now()
 
-
-	pub_params = rospy.Publisher('simulator_parameters_pub', Parameters, queue_size = 0)
-	#rospy.Subscriber("simulator_laser_pub", Laser_values, callback)
-
 	msg_params = Parameters()
 
-	rate = rospy.Rate(100)
-
-	while not gui.stopped:
-		parameters = gui.get_parameters()
+	print('Spinning ROS...')
+	while not rospy.is_shutdown():
+		with guiMutex:
+			if gui is None: return
+			parameters   = gui.get_parameters()
+			objects_data = gui.objects_data
+		#end with
 		msg_params.robot_x = parameters[0]
 		msg_params.robot_y = parameters[1]
 		msg_params.robot_theta = parameters[2]
@@ -151,7 +183,7 @@ def ros():
 			current_time,
 			"base_link_rob2w",
 			"map"
-			
+
 		)
 
 		odom = Odometry()
@@ -162,26 +194,40 @@ def ros():
 		odom.twist.twist = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
 		odom_pub.publish(odom)
 
-
-		objPose_pub.publish(convertArray2Pose(gui.objects_data))		   
-
-		if rospy.is_shutdown():
-			print('shutdown')
-			return
+		objPose_pub.publish(convertArray2Pose(objects_data))
 
 		rate.sleep()
+	# end while
+	print('ROS thread done')
+#end def
 
-		#print(gui.stopped)
 
-	for _ in range(20):
-		msg_params.run = False
-		pub_params.publish(msg_params)
-		rate.sleep()
+def sigint_handler(*args):
+	global gui
+	print('Shutting down...')
+	with guiMutex:
+		if gui is not None:
+			gui.kill()
+			gui = None
+	print('Gui terminated')
+#end def
 
 
 def main():
-	time.sleep(5) #
-	ros()
+	global gui, rosThread
+	gui = MobileRobotSimulator()
+	print('Setting up ROS')
+	setup_ros()
+	rospy.on_shutdown(sigint_handler)
+	rosThread = Thread(target=ros_poll)
+	rosThread.start()
+	print('Starting GUI')
+	gui.run()
+	print('GUI closed. Shutting down...')
+	with guiMutex:
+		gui = None
+	print('Bye!')
+
 
 if __name__ == "__main__":
 	main()

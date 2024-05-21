@@ -1,12 +1,12 @@
 #################################################
-#                                               #
-#            MobileRobotSimulator.py            #
-#                                               #
-#		         Diego Cordero                  #
-#                                               #
-#            Biorobotics Laboratory             #
-# 		           UNAM-2019                    #
-#                                               #
+# MobileRobotSimulator3x.py
+#
+# Author: Diego Cordero
+#         Jesús Savage
+#         Mauricio Matamoros
+#
+# Update to Python3 by kyordhel
+#
 ################################################# 
 
 import rospkg
