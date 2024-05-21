@@ -141,7 +141,7 @@ class MobileRobotSimulator(threading.Thread):
 				self.__q.get(False)
 			except:
 				pass
-		self.__q.put(self._get_parameters)
+		self.__q.put(self._get_parameters())
 		self.root.after(100, self._update_parameters_q)
 
 	def _get_parameters(self): # It returns the parameters of simulation to be publish by a ROS topic
