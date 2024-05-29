@@ -5,7 +5,6 @@ import sys
 
 if sys.version_info[0] == 2:
 	print("Python2 detected.")
-	sys.exit(-1)
 	from sn27 import main
 	main()
 elif sys.version_info[0] == 3:

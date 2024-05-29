@@ -1,13 +1,13 @@
 #################################################
-# MobileRobotSimulator3x.py
+# MobileRobotSimulator27.py
 #
 # Author: Diego Cordero
-#         Jesús Savage
+#         Jesus Savage
 #         Mauricio Matamoros
 #
-# Update to Python3 by kyordhel
-#
 ################################################# 
+
+
 
 import rospkg
 from Tkinter import *
