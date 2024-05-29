@@ -55,8 +55,8 @@ class MobileRobotSimulator(threading.Thread):
 		self.canvasY= 600
 		# robot position and angle
 		self.robot_theta=0
-		self.robotX=-100
-		self.robotY=-100
+		self.robotX=254
+		self.robotY=283
 
 		self.p_giro=0
 		self.p_distance=0
@@ -112,6 +112,7 @@ class MobileRobotSimulator(threading.Thread):
 		self.initY = 0
 		self.initR = 0
 
+		#self.__getitem__ = 0
 		self.steps_ = 0
 		self.steps_aux = 0
 		self.posible_collision = [None] * 512;
@@ -126,7 +127,7 @@ class MobileRobotSimulator(threading.Thread):
 		self.s_t_simulation(False)
 		self.clear_topological_map()
 		self.startFlag=False
-		self.s_t_simulation(False)
+		#self.s_t_simulation(False)
 		time.sleep(2)
 		self.root.quit()
 		self.root.destroy()
@@ -447,6 +448,8 @@ class MobileRobotSimulator(threading.Thread):
 
 		self.objects_data = []
 		self.grasp_id = False
+		print("varLoadObjects "+str(self.varLoadObjects.get()) )
+
 		if  self.varLoadObjects.get():
 			try:
 				map_file = open(self.rospack.get_path('simulator')+'/src/data/objects/objects.txt','r') #Open file
@@ -532,7 +535,9 @@ class MobileRobotSimulator(threading.Thread):
 #######################################
 
 	def s_t_simulation(self,star_stop): # Button start simulation
-		
+
+	 	print "start_stop ",str(star_stop)	
+
 		if star_stop :
 			self.w.delete(self.nodes_image)	
 			self.denable('disabled')
@@ -606,6 +611,7 @@ class MobileRobotSimulator(threading.Thread):
 				self.delete_robot()
 			self.robotX = event.x
 			self.robotY = event.y
+			print("robot x ",str(event.x),"robot y ",event.y)
 			self.plot_robot()
 
 
@@ -642,14 +648,18 @@ class MobileRobotSimulator(threading.Thread):
 
 		self.steps_= self.steps_+1;
 		self.entrySteps.delete ( 0, END )
-		 
+
+ 
 		if self.startFlag:
 			self.entrySteps.insert ( 0, str(self.steps_)  )
 		else:
 			self.entrySteps.insert ( 0, str(self.steps_aux)  )
 
 		if self.steps_ == self.steps_aux:
-			self.s_t_simulation(False)
+			#self.s_t_simulation(False)
+			#self.s_t_simulation(True)
+			dummy = 1
+			#print "here 1"
 		#elif( ( float(self.entryPoseX.get()) -self.light_x )**2 + (  float(self.entryPoseY.get())  - self.light_y )**2) < .05**2:
 			#self.s_t_simulation(False)
 		else:
@@ -1558,7 +1568,7 @@ class MobileRobotSimulator(threading.Thread):
 		
 		self.entryLightX = Label(self.rightMenu ,text = "Click Right" ,background = self.backgroundColor ,font = self.lineFont ,justify='center')
 		self.entryLightY = Label(self.rightMenu ,text = "Click Right" ,background = self.backgroundColor ,font = self.lineFont ,justify='center')
-		self.entryStepsExcec = Label(self.rightMenu ,text = "0" ,background = self.backgroundColor ,font = self.lineFont ,justify='center')
+		self.entryStepsExcec = Label(self.rightMenu ,text = "50000" ,background = self.backgroundColor ,font = self.lineFont ,justify='center')
 		#self.entryFile.insert ( 0, 'random_2' )
 		self.entryFile.insert ( 0, 'final' )
 		self.entrySteps.insert( 0, '1' )
@@ -1587,7 +1597,10 @@ class MobileRobotSimulator(threading.Thread):
 		self.checkFaster      .deselect()
 		self.checkShowSensors .select()
 		self.checkAddNoise    .deselect()
-		self.checkLoadObjects    .deselect()
+		#self.checkLoadObjects    .deselect()
+		self.checkLoadObjects    .select()
+		#self.varLoadObjects = 1
+		#self.read_objects()
 	
 		# Robot 
 
@@ -1784,5 +1797,11 @@ class MobileRobotSimulator(threading.Thread):
 		self.gui_init()
 		self.root.after(100, self._update_parameters_q)
 		self.read_map()
-		self.plot_robot2()
+                self.read_objects()
+		#self.plot_robot2()
+		#self.plot_robot()
+		self.s_t_simulation(True)
 		self.root.mainloop()
+
+
+

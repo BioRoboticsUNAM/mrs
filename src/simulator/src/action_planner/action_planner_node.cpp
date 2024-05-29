@@ -54,6 +54,7 @@ int main(int argc ,char **argv)
     char attribute[300];
     char attribute1[300];
     char attribute2[300];
+    int dummy;
 
 
 
@@ -134,8 +135,13 @@ int main(int argc ,char **argv)
      			ros::spinOnce();
 
 			while(flg_once){
-     			
-			    printf("\nInside case\n"); 
+     		
+			    printf("\nI am ready for a new command\n");
+                            sprintf(string2,"I am ready for a new command");
+			    msg1.action=string2;
+                            speech_generation_msg.publish(msg1);              // Publishes 'msg' message
+                            sleep(1.00);
+	
 			    ros::spinOnce();
 			    num_plan=num_plan+num_actions;
                		    printf("\n ******* Waiting for a new plan to be executed %d *******\n",num_plan);
@@ -158,6 +164,9 @@ int main(int argc ,char **argv)
 				for(k=1; k<= plan.num[i];k++){
 		                        printf("\nExecuting: %d %s\n",k,plan.action_plan[i][k]);
 
+					//printf("put a number -> ");
+                			//scanf("%d",&dummy);
+
 					msg.stamp = ros::Time::now();	 		// Save current time in the stamp of 'msg'
 					msg.data = k;					// Save the the 'count' value in the data of 'msg'
 					ss=plan.action_plan[i][k];	
@@ -178,7 +187,7 @@ int main(int argc ,char **argv)
 						sprintf(string2,"%s %s",exe_action,place);
 						msg1.action=string2;
 						speech_generation_msg.publish(msg1);	 	// Publishes 'msg' message
-                                                sleep(2.00);
+                                                sleep(1.00);
                                                	ros::spinOnce();
 						flg_msg_navigation = 0;
 
@@ -188,11 +197,11 @@ int main(int argc ,char **argv)
 
 							printf("Waiting for an answer from motion planner go_to command %d, flg_message_navigation %d\n", 
 										count,flg_msg_navigation);
-                                                	sleep(2.00);
+                                                	sleep(1.00);
 
                                                         msg.data = count;       // Save the the 'count' value in the data of 'msg'
                                                         count++;
-                                                        if(count > 9){
+                                                        if(count > 29){
                                                                 printf("ACTION %s could not be executed\n",exe_action);
                                                                 num_no_exe++;
                                                                 plan_no_executed[num_no_exe]=i;
@@ -212,22 +221,30 @@ int main(int argc ,char **argv)
 					           //printf("waiting for the simulation to continue for go_to %d\n",count);
                                               }
 
-					      sprintf(string2,"arrived %s",place);
-					      msg1.action=string2;
-					      speech_generation_msg.publish(msg1);	 	// Publishes 'msg' message
-                                              sleep(2.00);
-					      /*
 					      if(success == 1){
-							printf("\ngoto executed correctly\n");
+							printf("\ngoto executed correctly, I arrived to %s\n",place);
+					      		sprintf(string2,"goto executed correctly, I arrived to %s",place);
 					      }
 					      else{
-							 printf("\ngoto not executed\n");
+							 printf("\ngoto not executed correctly\n");
+					      		 sprintf(string2,"goto not executed correctly");
 					      }
+
+					      msg1.action=string2;
+					      speech_generation_msg.publish(msg1);	 	// Publishes 'msg' message
+                                              sleep(1.00);
+
+
+					      /*
 					      sprintf(str,"(assert (plans %d %d %d %s))",i,k,success,exe_action);
     					      printf("\nSend plan result %s\n",str);
     					      SimuladorRepresentation::strQueryKDB(str, result_str, 10000);
     					      printf("\nCLIPS answer: %d %s\n",i,result_str.c_str());
 					      */
+
+					      //printf("put a number -> ");
+                			      //scanf("%d",&dummy);
+
 
 					}
 
@@ -244,7 +261,7 @@ int main(int argc ,char **argv)
 						   if( params_act.run ){                 // Check if the simulation continues
 							printf("Waiting for an answer from motion planner mv command, flg_message_navigation %d\n", 
 											flg_msg_navigation);
-                                                        sleep(2.00);
+                                                        sleep(1.00);
 
 							msg.data = count;       // Save the the 'count' value in the data of 'msg'
                                                         count++;
@@ -313,7 +330,7 @@ int main(int argc ,char **argv)
 					      	    sprintf(string2,"arrived %s",place);
 					      	    msg1.action=string2;
 					      	    speech_generation_msg.publish(msg1);	 	// Publishes 'msg' message
-                                              	    sleep(2.00);
+                                              	    sleep(1.00);
                                                     //printf("waiting for the simulation to continue for go %d\n",count);
                                                 }
                                         }
@@ -325,7 +342,7 @@ int main(int argc ,char **argv)
 						sprintf(string2,"%s %s",exe_action,object);
 						msg1.action=string2;
 						speech_generation_msg.publish(msg1);	 	// Publishes 'msg' message
-                                                sleep(2.00);
+                                                sleep(1.00);
 						result=send_grab_drop(exe_action,object,answer);
 						printf("\nAnswer MANIPULATOR %d %s\n",result,answer);
 						sscanf(answer,"%s %s %d",command,object_res,&result);
@@ -344,11 +361,12 @@ int main(int argc ,char **argv)
 						sprintf(string2,"%sed %s",exe_action,object);
 						msg1.action=string2;
 						speech_generation_msg.publish(msg1);	 	// Publishes 'msg' message
-                                                sleep(2.00);
+                                                sleep(1.00);
 					}	
 					else if(strcmp(exe_action,"drop")==0){
                                                 sscanf(plan.action_plan[i][k],"%s %s %d %d %s %s",ROS_System,string1,&plan_num,&id,exe_action,object);
 						sprintf(string2,"%s %s",exe_action,object);
+						printf("message speech generation %s %s",exe_action,object);
 						msg1.action=string2;
 						speech_generation_msg.publish(msg1);	 	// Publishes 'msg' message
                                                 sleep(1.00);
@@ -366,7 +384,7 @@ int main(int argc ,char **argv)
 						sprintf(string2,"%sed %s",exe_action,object);
 						msg1.action=string2;
 						speech_generation_msg.publish(msg1);	 	// Publishes 'msg' message
-                                                sleep(2.00);
+                                                sleep(1.00);
                                         }
 
 					// FIND-OBJECT action
@@ -382,7 +400,7 @@ int main(int argc ,char **argv)
 						sprintf(string2,"%s %s",exe_action,object);
 						msg1.action=string2;
 						speech_generation_msg.publish(msg1);	 	// Publishes 'msg' message
-                                                sleep(2.00);
+                                                sleep(1.00);
                                                	ros::spinOnce();
 
 						while(flg_msg == 0){
@@ -419,7 +437,7 @@ int main(int argc ,char **argv)
 					   sprintf(string2,"found %s",object);
 					   msg1.action=string2;
 					   speech_generation_msg.publish(msg1);	 	// Publishes 'msg' message
-                                           sleep(2.00);
+                                           sleep(1.00);
 
                                         }
 
@@ -435,7 +453,7 @@ int main(int argc ,char **argv)
                                                 msg1.action=string2;
                                                 printf("Sending message to ask a question %s\n",string2);
                                                 speech_generation_msg.publish(msg1);            // Publishes 'msg' message
-                                                sleep(2.00);
+                                                sleep(1.00);
                                                 ros::spinOnce();
 
                                         }
@@ -453,7 +471,7 @@ int main(int argc ,char **argv)
                                                 msg1.action=string2;
                                                 printf("Sending message to ask a question %s\n",string2);
                                                 speech_generation_msg.publish(msg1);            // Publishes 'msg' message
-                                                sleep(2.00);
+                                                sleep(1.00);
                                                 ros::spinOnce();
 
                                         }
@@ -489,7 +507,7 @@ int main(int argc ,char **argv)
 			   sprintf(string2,"Finishedplan %d",num_plan);
                            msg1.action=string2;
                            //speech_generation_msg.publish(msg1);              // Publishes 'msg' message
-                           sleep(2.00);
+                           sleep(1.00);
 
      			   if(num_actions > 0){
         			printf("\n ******* Complete plan fullfilled  *******\n");

@@ -505,6 +505,22 @@
 
 
 
+(defrule qtrans-Robot-ROS
+        ?f <- (num-sentences 1)
+        ?f1 <- (qtrans (obj ?robot)(question where))
+        (item (type Robot) (name ?robot)(room ?room)(zone ?zone))
+        =>
+        ; it answer where the robot is
+        (retract ?f ?f1)
+        (bind ?*plan_number* (+ 1 ?*plan_number*))
+        (bind ?*plan_number_new* (+ 1 ?*plan_number_new*))
+        (assert (plan (name state)(id ?*plan_number* )(number 1 )(actions answer ?robot ?room ?zone)))
+        (assert (attempt (name answer) (id ?*plan_number* )(question where)(zone ?zone)(number 1 )))
+        (assert (finish-planner state ?*plan_number* ?*plan_number_new*))
+)
+
+
+
 (defrule qtrans-who-object-ROS
         ?f <- (num-sentences 1)
         ?f1 <- (qtrans (obj ?obj)(question who))

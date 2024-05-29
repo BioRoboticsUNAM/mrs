@@ -124,8 +124,8 @@ int main(int argc ,char **argv)
             // it gets sensory data
             ros::spinOnce();
 
-	    printf("put a number again 1 -> ");
-            scanf("%d",&dummy);
+	    //printf("put a number again 1 -> ");
+            //scanf("%d",&dummy);
             if (!params.useRealRobot)
             {
                 get_light_values(&intensity,light_readings); // function in ~/catkin_ws/src/simulator/src/motion_planner/motion_planner_utilities.h
@@ -350,8 +350,8 @@ int main(int argc ,char **argv)
 		    if(flg_executing_goto == 0){
 
 
-			printf("put a number again 2 -> ");
-           	        scanf("%d",&dummy);
+			//printf("put a number again 2 -> ");
+           	        //scanf("%d",&dummy);
 
 
 			printf("Movement to be executed action_data %d %s\n",action_data,Action_Planner);
@@ -409,6 +409,7 @@ int main(int argc ,char **argv)
                     {
                         if(flg_finish == 1) {
 				//stop();
+				set_light_position(-1,-1);
 				flg_executing_goto = 0;
                                 action_data = 0;
                                 msg_mot.stamp = ros::Time::now();                   // Save current time in the stamp of 'msg'
@@ -498,14 +499,18 @@ int main(int argc ,char **argv)
             printf("Step: %d \n",cta_steps++);
             printf("Movement: twist: %f advance: %f \n" ,movements.twist ,movements.advance );
 
+	    //printf("put a number -> ");
+	    //scanf("%d",&dummy);
+
+
             flg_noise = params.noise;
 
-	    printf("put a number again 2 -> ");
-            scanf("%d",&dummy);
+	    //printf("put a number again 2 -> ");
+            //scanf("%d",&dummy);
 
             move_robot(movements.twist,movements.advance,lidar_readings);
-	    printf("put a number again 3 -> ");
-            scanf("%d",&dummy);
+	    //printf("put a number again 3 -> ");
+            //scanf("%d",&dummy);
             ros::spinOnce();
             new_simulation = 0;
             r.sleep();

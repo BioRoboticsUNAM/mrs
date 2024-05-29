@@ -173,16 +173,16 @@ void NCursesWin::handleKeyDefault(const uint32_t& c){
 			exit = true;
 			return;
 
-		case 'g': sendPrintAgenda(); break;
+		case 'a': sendPrintAgenda(); break;
 		case 'f': sendPrintFacts();  break;
 		case 'i': sendPrintRules();  break;
 
 		case KEY_F(1): case 'U': sendWatchFunc();  break;
-		case KEY_F(2): case 'B': sendWatchGlob();  break;
+		case KEY_F(2): case 'G': sendWatchGlob();  break;
 		case KEY_F(3): case 'F': sendWatchFacts(); break;
-		case KEY_F(4): case 'R': sendWatchRules(); break;
+		case KEY_F(4): case 'I': sendWatchRules(); break;
 
-		case KEY_F(5): case 'r': sendRun(1); break;
+		case KEY_F(5): case 'R': case 'r': sendRun(1); break;
 		case KEY_F(6): case 'E': case 'e': sendRun(runN); break;
  		case KEY_F(7): case 'N': case 'n':
 			inputAction = InputAction::Run;
@@ -196,10 +196,9 @@ void NCursesWin::handleKeyDefault(const uint32_t& c){
 			shiftToInputMode("Command: ");
 			break;
 
-		case 'A': case 'a':
+		case 'S': case 's':
 			inputAction = InputAction::Assert;
 			inputBuffer = std::string(prevFact);
-			inputBuffer.clear();
 			shiftToInputMode("Fact: ");
 			break;
 
@@ -338,7 +337,6 @@ void NCursesWin::handleInputNL(){
 			break;
 		case InputAction::Assert:
 			sendAssert(inputBuffer);
-			printmid(inputBuffer + "\n");
 			break;
 		case InputAction::Run:
 			// sendRun(runN);
@@ -461,6 +459,8 @@ void NCursesWin::addPublisher(const pubfunc& f){
 
 
 void NCursesWin::resetBottomDefault(){
+	std::string lblrunN( "Run " + std::to_string(runN) );
+	if(runN < 1) lblrunN+= " (n=0 all)";
 	static std::vector<hotkey> options = {
 		hotkey( " l", "Load File"),
 		hotkey( "^r", "Reset"),
@@ -469,24 +469,25 @@ void NCursesWin::resetBottomDefault(){
 	// Column 2
 		hotkey( "^c", "Clear"),
 		// hotkey( "^l", "Log Level"),
-		hotkey( " a", "Assert fact"),
+		hotkey( " s", "Assert fact"),
 		hotkey( " c", "Enter Command"),
 
 	// Column 3
 		hotkey( " t", "Toggle watches"),
-		hotkey( " g", "Print Agenda"),
+		hotkey( " a", "Print Agenda"),
 		hotkey( " r", "Run 1", COLOR_BLUE | 0x08),
 
 	// Column 4
 		hotkey( " F", "Watch Facts"),
 		hotkey( " f", "Print Facts"),
-		hotkey( " e", "Run n (n=0 all)", COLOR_BLUE | 0x08),
+		hotkey( " e", "Run n", COLOR_BLUE | 0x08),
 
 	// Column 5
-		hotkey( " R", "Watch Rules"),
+		hotkey( " I", "Watch Rules"),
 		hotkey( " i", "Print Rules"),
 		hotkey( " n", "Set Run n", COLOR_BLUE | 0x08)
 	};
+	options[11].setLabel(lblrunN);
 
 	updateBottom(" Quick Menu ", options);
 }

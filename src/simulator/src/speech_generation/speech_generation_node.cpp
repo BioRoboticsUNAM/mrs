@@ -75,7 +75,7 @@ void msgCallbackSpeechGeneration(const simulator::SpeechGeneration::ConstPtr& ms
 
  //ACT-PLN plan 1 goto bedroom deposit
  sscanf(Action_Planner,"%s %s",action,item);
- printf("Speech generation %s item %s\n",action,item);
+ printf("Speech generation %s  %s\n",action,item);
  sprintf(message,"%s %s",action,item);
 // speak_message(message);
  speak_message(Action_Planner);

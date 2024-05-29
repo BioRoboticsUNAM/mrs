@@ -559,6 +559,7 @@ int quantize_laser_noise(float *observations, int size, float laser_value  )
     int iz,de,salida;
     int j;
 
+    printf(" noise laser value %f\n",laser_value);
     iz = de = salida = 0;
     if( size % 2 != 0)
     {
@@ -578,6 +579,7 @@ int quantize_laser_noise(float *observations, int size, float laser_value  )
         if( cta >=  size*.4  )
         {
             iz = 2;
+	    printf(" observations[%d] %f laser value %f\n",i,observations[i],laser_value);
             break;
         }
     }
@@ -590,6 +592,7 @@ int quantize_laser_noise(float *observations, int size, float laser_value  )
         if( cta >=  size*.4  )
         {
             de = 1;
+	    printf(" observations[%d] %f laser value %f\n",i,observations[i],laser_value);
             break;
         }
     }
@@ -606,6 +609,9 @@ int quantize_laser(float *observations, int size, float laser_value  )
     int iz,de,salida;
     int j;
 
+
+
+    printf(" noise laser value %f\n",laser_value);
     iz = de = salida = 0;
     if( size % 2 != 0)
     {
@@ -622,6 +628,7 @@ int quantize_laser(float *observations, int size, float laser_value  )
         if( observations[i] < laser_value  )
         {
             iz = 2;
+	    printf(" observations[%d] %f laser value %f\n",i,observations[i],laser_value);
             break;
         }
     }
@@ -631,6 +638,7 @@ int quantize_laser(float *observations, int size, float laser_value  )
         if( observations[i] < laser_value  )
         {
             de = 1;
+	    printf(" observations[%d] %f laser value %f\n",i,observations[i],laser_value);
             break;
         }
     }

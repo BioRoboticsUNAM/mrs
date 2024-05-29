@@ -13,7 +13,7 @@
 
 
 //#define THRESHOLD 20
-#define THRESHOLD 30
+#define THRESHOLD 20
 
 // State Machine 
 int sm_avoidance_destination(float intensity, int  dest,int obs ,movement *movements  ,int *next_state ,float Mag_Advance ,float max_twist)
@@ -32,14 +32,15 @@ int sm_avoidance_destination(float intensity, int  dest,int obs ,movement *movem
 
 		if (intensity > THRESHOLD){
                         *movements=generate_output(STOP,Mag_Advance,max_twist);
-                        //printf("Present State: %d STOP\n", state);
+                        printf("Present State: %d STOP\n", state);
                         printf("\n **************** Reached light source ******************************\n");
                         *next_state = 0;
 			result = 1;
                 }
                 else{
                         *movements=generate_output(FORWARD,Mag_Advance,max_twist);
-                        //printf("Present State: %d forward\n", state);
+                        //*movements=generate_output(STOP,Mag_Advance,max_twist);
+                        printf("Present State: %d forward\n", state);
                         *next_state = 1;
                 }
 
@@ -50,12 +51,12 @@ int sm_avoidance_destination(float intensity, int  dest,int obs ,movement *movem
                 if (obs == 0){
 			// there is not obstacle
                         *movements=generate_output(FORWARD,Mag_Advance,max_twist);
-                        //printf("Present State: %d FORWARD\n", state);
+                        printf("Present State: %d FORWARD\n", state);
                         *next_state = 13;
                 }
                 else{
                         *movements=generate_output(STOP,Mag_Advance,max_twist);
-                        //printf("Present State: %d STOP\n", state);
+                        printf("Present State: %d STOP\n", state);
 
                         if (obs == 1){
                                 // obtacle on the right
@@ -75,67 +76,67 @@ int sm_avoidance_destination(float intensity, int  dest,int obs ,movement *movem
 
         case 2: // Backward, obstacle in the left
                 *movements=generate_output(BACKWARD,Mag_Advance,max_twist);
-		//printf("Present State: %d BACKWARD, obstacle LEFT\n", state);
+		printf("Present State: %d BACKWARD, obstacle LEFT\n", state);
                 *next_state = 3;
                 break;
 
         case 3: // right turn
                 *movements=generate_output(RIGHT,Mag_Advance,max_twist);
-		//printf("Present State: %d TURN RIGHT\n", state);
+		printf("Present State: %d TURN RIGHT\n", state);
                 *next_state = 0;
                 break;
 
         case 4: // Backward, obstacle in the right
                 *movements=generate_output(BACKWARD,Mag_Advance,max_twist);
-		//printf("Present State: %d BACKWARD, obstacle RIGHT\n", state);
+		printf("Present State: %d BACKWARD, obstacle RIGHT\n", state);
                 *next_state = 5;
                 break;
 
         case 5: // left turn
                 *movements=generate_output(LEFT,Mag_Advance,max_twist);
-		//printf("Present State: %d TURN LEFT\n", state);
+		printf("Present State: %d TURN LEFT\n", state);
                 *next_state = 0;
                 break;
 
         case 6: // Backward, obstacle in front
                 *movements=generate_output(BACKWARD,Mag_Advance,max_twist);
-		//printf("Present State: %d BACKWARD, obstacle FRONT\n", state);
+		printf("Present State: %d BACKWARD, obstacle FRONT\n", state);
                 *next_state = 7;
                 break;
 
 	case 7: /// Left turn
                 *movements=generate_output(LEFT,Mag_Advance,max_twist);
-		//printf("Present State: %d TURN 1 LEFT\n", state);
+		printf("Present State: %d TURN 1 LEFT\n", state);
                 *next_state = 8;
                 break;
 
         case 8:// Left turn
                 *movements=generate_output(LEFT,Mag_Advance,max_twist);
-		//printf("Present State: %d TURN 2 LEFT\n", state);
+		printf("Present State: %d TURN 2 LEFT\n", state);
                 *next_state = 9;
                 break;
 
         case 9: // Forward
                 *movements=generate_output(FORWARD,Mag_Advance,max_twist);
-                //printf("Present State: %d 1 FORWARD\n", state);
+                printf("Present State: %d 1 FORWARD\n", state);
                 *next_state = 10;
                 break;
 
         case 10: // Forward
                 *movements=generate_output(FORWARD,Mag_Advance,max_twist);
-                //printf("Present State: %d 2 FORWARD\n", state);
+                printf("Present State: %d 2 FORWARD\n", state);
                 *next_state = 11;
                 break;
 
 	case 11: // Right turn
                 *movements=generate_output(RIGHT,Mag_Advance,max_twist);
-                //printf("Present State: %d turn 1 RIGHT\n", state);
+                printf("Present State: %d turn 1 RIGHT\n", state);
                 *next_state = 12;
                 break;
 
         case 12: // Right turn
                 *movements=generate_output(RIGHT,Mag_Advance,max_twist);
-                //printf("Present State: %d turn 2 RIGHT\n", state);
+                printf("Present State: %d turn 2 RIGHT\n", state);
                 *next_state = 0;
                 break;
 
@@ -143,31 +144,31 @@ int sm_avoidance_destination(float intensity, int  dest,int obs ,movement *movem
 		if (dest == 0){
                                 // go right
                                 *movements=generate_output(RIGHT,Mag_Advance,max_twist);
-                                //printf("Present State: %d RIGHT \n", state);
+                                printf("Present State: %d RIGHT \n", state);
                                 *next_state = 3;
                  }
                  else if (dest == 1){
                                 // go left
                                 *movements=generate_output(LEFT,Mag_Advance,max_twist);
-                                //printf("Present State: %d LEFT\n", state);
+                                printf("Present State: %d LEFT\n", state);
                                 *next_state = 5;
                  }
                  else if (dest == 2){
                                 // go forward 
                                 *movements=generate_output(FORWARD,Mag_Advance,max_twist);
-                                //printf("Present State: %d FORWARD\n", state);
+                                printf("Present State: %d FORWARD\n", state);
                                 *next_state = 3;
                  }
                  else if (dest == 3){
                                 // go forward 
                                 *movements=generate_output(FORWARD,Mag_Advance,max_twist);
-                                //printf("Present State: %d FORWARD\n", state);
+                                printf("Present State: %d FORWARD\n", state);
                                 *next_state = 5;
                  }
                 break;
 
 	default:
-		//printf("State %d not defined used ", state);
+		printf("State %d not defined used ", state);
                 *movements=generate_output(STOP,Mag_Advance,max_twist);
                 *next_state = 0;
                 break;

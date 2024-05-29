@@ -201,9 +201,7 @@ int action_planner(float px, float py, float theta, Actions *plan, int num_pl){
     if(init_flg==1){
 
        		// It starts the communication with the Clips node
-		printf("\n before start\n");
        		start_clips_node_action_planner();
-		printf("\n after start\n");
        		init_flg=0;
        		//strcpy(arm,"manipulator");
 
@@ -212,12 +210,12 @@ int action_planner(float px, float py, float theta, Actions *plan, int num_pl){
 
     flg_clp=0;
 
+    //printf("put a number -> ");
+    //scanf("%d",&dummy);
     while(flg_clp == 0){
 	 
 	//if( params_act.run ){                 // Check if the simulation continues
 
-		//printf("put a number -> ");
-		////scanf("%d",&dummy);
        		//Function to asserting a fact to the clips node to check if Clips is alive
        		SimuladorRepresentation::strQueryKDB("(assert (alive clips))", result, 10000);
        		std::cout << "CLIPS answer alive: " << result << std::endl;
@@ -251,8 +249,11 @@ int action_planner(float px, float py, float theta, Actions *plan, int num_pl){
 
     if(strcmp(action,"num_plans-total")==0){
 
-	   sscanf(result.c_str(),"%s %s %s %d %d",fact,ROS_System,action,&num_plan_actual,&num_actions);
+	   sscanf(result.c_str(),"%s %s %d %d",ROS_System,action,&num_plan_actual,&num_actions);
 
+	   printf("num. actions %d\n",num_actions);
+    	   //printf("put a number again 2 -> ");
+           //scanf("%d",&dummy);
 
 	   for(i=num_pl;i < num_actions+num_pl;i++){
 
