@@ -1,36 +1,21 @@
 #################################################
-#						#
-#	MobileRobotSimulator.py			#
-#						#
-#		Diego Cordero			#
-#						#
-#	Biorobotics Laboratory			#
-# 		UNAM-2019			#
-#						#
+# MobileRobotSimulator3x.py
+#
+# Author: Diego Cordero
+#         Jesús Savage
+#         Mauricio Matamoros
+#
+# Update to Python3 by kyordhel
+#
 ################################################# 
 
-# import rospkg
-# from tkinter import *
-# from tkinter.font import Font
-# import queue
-# import threading
-# from tkinter import ttk
-# from tkinter import messagebox as tkMessageBox
-# import time
-# import math
-# from PIL import Image
-# from PIL import ImageDraw
-# import os
-# import numpy as np
-# import subprocess
-
+import rospy
 import rospkg
-from Tkinter import *
-from tkFont import Font
-import Queue as queue
-import threading
-import ttk
-import tkMessageBox
+from tkinter import *
+from tkinter.font import Font
+import queue
+from tkinter import ttk
+from tkinter import messagebox as tkMessageBox
 import time
 import math
 from PIL import Image
@@ -38,15 +23,15 @@ from PIL import ImageDraw
 import os
 import numpy as np
 import subprocess
+import worldmap
 
  
-class MobileRobotSimulator(threading.Thread):
-	
+class MobileRobotSimulator():
 	def __init__(self):
-		threading.Thread.__init__(self)
 		self.__q = queue.Queue(maxsize=1)
 		self.rospack = rospkg.RosPack()
 		self.stopped = False 
+		self.stopping = False
 		# map size in meters
 		self.mapX = 0 
 		self.mapY = 0
@@ -55,8 +40,8 @@ class MobileRobotSimulator(threading.Thread):
 		self.canvasY= 600
 		# robot position and angle
 		self.robot_theta=0
-		self.robotX=254
-		self.robotY=283
+		self.robotX=254             # BY SAVAGE
+		self.robotY=283             # BY SAVAGE
 
 		self.p_giro=0
 		self.p_distance=0
@@ -100,8 +85,8 @@ class MobileRobotSimulator(threading.Thread):
 		self.Y_pose = 0
 
 		self.num_polygons = 0  #How many polygons exist in the field.
-		self.polygons = []	   #Stors polygons vertexes
-		self.polygons_mm = []  #Stors 2 vertexses  for each polygon the maximum and minimum  x and y  points.
+		self.polygons = []	   #Stores polygons vertexes
+		self.polygons_mm = []  #Stores 2 vertices  for each polygon the maximum and minimum  x and y  points.
 
 		self.objects_data = []
 		self.grasp_id = False
@@ -112,29 +97,36 @@ class MobileRobotSimulator(threading.Thread):
 		self.initY = 0
 		self.initR = 0
 
-		#self.__getitem__ = 0
 		self.steps_ = 0
 		self.steps_aux = 0
 		self.posible_collision = [None] * 512;
 		self.sensors_value = [None] * 512 
 
-		self.start()
+
+
+	def shutdown(self):
+		if self.stopped or self.stopping: return
+		time.sleep(500)
+		kill()
 
 	def kill(self):  # When press (x) window
+		if self.stopped: return
 		self.stopped = True
 		self.varTurtleBot.set(0)
 		self.startFlag=False
 		self.s_t_simulation(False)
 		self.clear_topological_map()
 		self.startFlag=False
-		#self.s_t_simulation(False)
-		time.sleep(2)
+		# self.s_t_simulation(False)        # BY SAVAGE
+		# time.sleep(2)
 		self.root.quit()
 		self.root.destroy()
 
 
 	def get_parameters(self): # It returns the parameters of simulation to be publish by a ROS topic
+		if self.stopped or self.stopping: return None
 		return self.__q.get(block=True, timeout=1000)
+
 
 	def _update_parameters_q(self):
 		if self.__q.full(): # Discard
@@ -142,8 +134,13 @@ class MobileRobotSimulator(threading.Thread):
 				self.__q.get(False)
 			except:
 				pass
+
+		if self.stopped or rospy.is_shutdown():
+			self.__q.put(None)
+			return
 		self.__q.put(self._get_parameters())
 		self.root.after(100, self._update_parameters_q)
+
 
 	def _get_parameters(self): # It returns the parameters of simulation to be publish by a ROS topic
 		parameters = []
@@ -235,6 +232,7 @@ class MobileRobotSimulator(threading.Thread):
 				parameters.append( False )
 
 		return parameters
+	#end def
 
 	
 
@@ -382,49 +380,27 @@ class MobileRobotSimulator(threading.Thread):
 		self.polygons_mm = []
 		try:
 			#self.w.delete("all")
-			map_file = open(self.rospack.get_path('simulator')+'/src/data/'+self.entryFile.get()+'/'+self.entryFile.get()+'.wrl','r') #Open file
-			lines = map_file.readlines()                          #Split the file in lines
-			for line in lines: 									  #To read line by line
-				words = line.split()	                          #To separate  words 
-				if words:										  #To avoid empty lines							
-					if words[0] == "(":							  #To avoid coments
-						if words[1] == "dimensions":			  #To get world dimensions
-							self.mapX = float (words[3])	
-							self.mapY = float (words[4])
-							self.print_grid()
-						elif words[1] == "polygon":				  #to get polygons vertex
+			map_file = self.rospack.get_path('simulator')+'/src/data/'+self.entryFile.get()+'/'+self.entryFile.get()+'.wrl'
+			wmap = worldmap.fromFile(map_file)
+			self.mapX = wmap.width
+			self.mapY = wmap.height
+			scaleX = self.canvasX / wmap.width
+			scaleY = self.canvasY / wmap.height
 
-							vertex_x = [ ( ( self.canvasX * float(x) ) / self.mapX ) for x in words[4:len(words)-1:2]	]
-							vertex_y = [ ( self.canvasY -  ( self.canvasY * float(y) ) / self.mapY ) for y in words[5:len(words)-1:2]	]
-							vertex_y_calculus = [ (( self.canvasY * float(y) ) / self.mapY ) for y in words[5:len(words)-1:2]	]
-							
-							vx = [ float(x)for x in words[4:len(words)-1:2] ]	
-							vy = [ float(y)for y in words[5:len(words)-1:2] ]
-						
-							vertexs = ( zip( vertex_x , vertex_y) )
-							self.polygons.append( zip( vertex_x , vertex_y_calculus))
-							poly = self.w.create_polygon(vertexs, outline=self.obstaclesOutlineColor, fill=self.obstacleInnerColor, width=1)
-							self.polygonMap.append(poly)
-							#self.w.create_text( self.canvasX * float(words[4]) / self.mapX,  self.canvasY -  ( self.canvasY * float(words[5]) ) / self.mapY, text=str(pp))
-							max_x = 0;
-							max_y = 0;
-							min_x = 999;
-							min_y = 999;
+			self.print_grid()
 
-							for i in vertexs:
-								if max_x < i[0]:
-									max_x = i[0]
-								if min_x > i[0]:
-									min_x = i[0]
+			for p in wmap.polygons:
+				vertices = p.getScaledVertices(scaleX, scaleY)
+				mirroryv = [ (v[0], self.canvasY - v[1]) for v in vertices ]
+				poly = self.w.create_polygon(mirroryv, outline=self.obstaclesOutlineColor, fill=self.obstacleInnerColor, width=1)
+				# self.w.create_text( vertices[0], text=str(p.name) )
+				self.polygons.append( vertices )
+				self.polygonMap.append( poly )
+				xcoords = [ v[0] for v in mirroryv ]
+				ycoords = [ v[1] for v in mirroryv ]
+				self.polygons_mm.append( [ [max(xcoords),max(ycoords)], [min(xcoords),min(ycoords)] ] )
+				self.num_polygons+= 1
 
-							for i in vertexs:
-								if max_y < i[1]:
-									max_y = i[1]
-								if max_y > i[1]:
-									min_y = i[1]
-							self.polygons_mm.append( [[max_x,max_y],[min_x,min_y] ] )
-					
-							self.num_polygons = self.num_polygons+1
 			for p in self.polygons:
 				p.append(p[0])
 		except IOError:
@@ -448,7 +424,7 @@ class MobileRobotSimulator(threading.Thread):
 
 		self.objects_data = []
 		self.grasp_id = False
-		print("varLoadObjects "+str(self.varLoadObjects.get()) )
+		print("varLoadObjects "+str(self.varLoadObjects.get()) )  # BY SAVAGE
 
 		if  self.varLoadObjects.get():
 			try:
@@ -535,9 +511,10 @@ class MobileRobotSimulator(threading.Thread):
 #######################################
 
 	def s_t_simulation(self,star_stop): # Button start simulation
+		
+		print(f'start_stop {star_stop}') # BY SAVAGE
 
-	 	print "start_stop ",str(star_stop)	
-
+		if self.stopped or self.stopping: return
 		if star_stop :
 			self.w.delete(self.nodes_image)	
 			self.denable('disabled')
@@ -581,9 +558,11 @@ class MobileRobotSimulator(threading.Thread):
 			self.move_robot(0)
 		self.denable('normal')
 		self.buttonStop.configure(state='normal')
+	#end def
+
 
 	def set_light_position(self,x,y): # Another way to start simulations, by plot the light ( goal point ).
-		
+		if self.stopped or self.stopping: return
 		if self.light >0:
 			self.w.delete(self.light)
 		y1 = self.mapY - y 
@@ -592,6 +571,7 @@ class MobileRobotSimulator(threading.Thread):
 		self.light_y = y 
 		self.entryLightX.config(text=str(self.light_x)[:4])
 		self.entryLightY.config(text=str(self.light_y)[:4])
+	#end def
 
 
 	def right_click(self,event): # Another way to start simulations, by plot the light ( goal point ).
@@ -611,7 +591,7 @@ class MobileRobotSimulator(threading.Thread):
 				self.delete_robot()
 			self.robotX = event.x
 			self.robotY = event.y
-			print("robot x ",str(event.x),"robot y ",event.y)
+			print(f'robot x {event.x} robot y {event.y}') # BY SAVAGE
 			self.plot_robot()
 
 
@@ -629,15 +609,16 @@ class MobileRobotSimulator(threading.Thread):
 ##################################################
 ##################################################
 	def handle_simulator_object_interaction(self,grasp,name):
+		if self.stopped or self.stopping: return
 		if grasp == 1:
 			return self.grasp_object(name)
 		else :
-			
 			return self.release_object()
 		self.d.set(1)
 
 
 	def handle_service(self,theta,distance):
+		if self.stopped or self.stopping: return
 		if not self.varTurtleBot.get():
 			self.p_giro = theta
 			self.p_distance = distance * self.canvasX 
@@ -648,8 +629,7 @@ class MobileRobotSimulator(threading.Thread):
 
 		self.steps_= self.steps_+1;
 		self.entrySteps.delete ( 0, END )
-
- 
+		 
 		if self.startFlag:
 			self.entrySteps.insert ( 0, str(self.steps_)  )
 		else:
@@ -668,15 +648,17 @@ class MobileRobotSimulator(threading.Thread):
 			self.a.set(1)
 
 	def handle_print_graph(self,graph_list):
+		if self.stopped or self.stopping: return
 		self.graph_list = graph_list 
 		self.b.set(1)
 
 	def handle_hokuyo(self,sensors_values):
+		if self.stopped or self.stopping: return
 		self.sensors_values = sensors_values 		
 		self.c.set(1)
 
 	def handle_turtle(self,x,y,r):
-
+		if self.stopped or self.stopping: return
 		if self.varTurtleBot.get():
 			self.robotX = self.convert_from_m_to_pixel(  x * math.cos(self.initR) + y * math.sin(self.initR) - self.initX + 2.5)
 			self.robotY = self.canvasY-self.convert_from_m_to_pixel( y * math.cos(self.initR) - x * math.sin(self.initR) - self.initY + 2.5 )
@@ -1597,8 +1579,8 @@ class MobileRobotSimulator(threading.Thread):
 		self.checkFaster      .deselect()
 		self.checkShowSensors .select()
 		self.checkAddNoise    .deselect()
-		#self.checkLoadObjects    .deselect()
-		self.checkLoadObjects    .select()
+		# self.checkLoadObjects    .deselect()
+		self.checkLoadObjects.select()
 		#self.varLoadObjects = 1
 		#self.read_objects()
 	
@@ -1797,11 +1779,8 @@ class MobileRobotSimulator(threading.Thread):
 		self.gui_init()
 		self.root.after(100, self._update_parameters_q)
 		self.read_map()
-                self.read_objects()
-		#self.plot_robot2()
-		#self.plot_robot()
+		self.read_objects()
+		# self.plot_robot2()
+		# self.plot_robot()
 		self.s_t_simulation(True)
 		self.root.mainloop()
-
-
-
