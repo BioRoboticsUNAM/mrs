@@ -25,7 +25,7 @@ void ctrlc_handler(int signum) {}
 NCursesWin::NCursesWin() :
 	exit(false), top(NULL), mid(NULL), bottom(NULL),
 	headingC("CLIPS Control"), headingR("rosclips: OFF"),
-	watchFlags(-1), runN(0),
+	watchFlags(-1), runN(0), quickMenuIndex(1),
 	currMod(KPMode::Default), inputAction(InputAction::None),
 	clipsStatus(CLIPSStatus::Offline)
 {
@@ -180,6 +180,11 @@ void NCursesWin::handleKeyDefault(const uint32_t& c){
 			exit = true;
 			return;
 
+		case '1': case '2':
+			quickMenuIndex = c - '0';
+			resetBottomDefault();
+		break;
+
 		case 'g': sendPrintAgenda(); break;
 		case 'f': sendPrintFacts();  break;
 		case 'i': sendPrintRules();  break;
@@ -222,6 +227,12 @@ void NCursesWin::handleKeyDefault(const uint32_t& c){
 			inputAction = InputAction::Load;
 			inputBuffer = std::string(prevLdFile);
 			shiftToInputMode("File to load: ");
+			break;
+
+		case 'P': case 'p':
+			inputAction = InputAction::Path;
+			inputBuffer = std::string(prevPath);
+			shiftToInputMode("CLP path: ");
 			break;
 
 		case ctrl('L'):
@@ -337,6 +348,9 @@ void NCursesWin::handleInputBS(){
 
 void NCursesWin::handleInputNL(){
 	switch(inputAction){
+		case InputAction::Path:
+			sendPath(inputBuffer);
+			break;
 		case InputAction::Load:
 			sendLoad(inputBuffer);
 			break;
@@ -366,6 +380,9 @@ void NCursesWin::savePreviousInput(){
 			break;
 		case InputAction::Assert:
 			prevFact = inputBuffer;
+			break;
+		case InputAction::Path:
+			prevPath = inputBuffer;
 			break;
 		case InputAction::Run:
 			runN = std::stoi(inputBuffer);
@@ -468,6 +485,15 @@ void NCursesWin::addPublisher(const pubfunc& f){
 
 
 void NCursesWin::resetBottomDefault(){
+	switch(quickMenuIndex){
+		case 1: resetBottomMenu1(); break;
+
+		case 2: resetBottomMenu2(); break;
+	}
+}
+
+
+void NCursesWin::resetBottomMenu1(){
 	static std::vector<hotkey> options = {
 		hotkey( " l", "Load File"),
 		hotkey( "^r", "Reset"),
@@ -480,7 +506,8 @@ void NCursesWin::resetBottomDefault(){
 		hotkey( " c", "Enter Command"),
 
 	// Column 3
-		hotkey( " t", "Toggle watches"),
+		hotkey::None,
+		// hotkey( " q", "Query CLIPS"),
 		hotkey( " g", "Print Agenda"),
 		hotkey( " r", "Run 1", COLOR_BLUE | 0x08),
 
@@ -495,7 +522,39 @@ void NCursesWin::resetBottomDefault(){
 		hotkey( " n", "Set Run n", COLOR_BLUE | 0x08)
 	};
 
-	updateBottom(" Quick Menu ", options);
+	updateBottom(" Quick Menu 1/2 ", options);
+}
+
+
+void NCursesWin::resetBottomMenu2(){
+	static std::vector<hotkey> options = {
+		hotkey( " l", "Load File"),
+		hotkey( "^r", "Reset"),
+		hotkey( "^x", "Exit"),
+
+	// Column 2
+		hotkey::None,
+		// hotkey( " o", "Quick load"),
+		hotkey( "F1", "Watch Functions"),
+		hotkey( " t", "Toggle watches"),
+
+	// Column 3
+		hotkey( " p", "Set clp path"),
+		hotkey( "F2", "Watch Globals"),
+		hotkey( "F5", "Run 1", COLOR_BLUE | 0x08),
+
+	// Column 4
+		hotkey::None,
+		hotkey( "F3", "Watch Facts"),
+		hotkey( "F6", "Run n (n=0 all)", COLOR_BLUE | 0x08),
+
+	// Column 5
+		hotkey::None,
+		hotkey( "F4", "Watch Rules"),
+		hotkey( "F7", "Set Run n", COLOR_BLUE | 0x08)
+	};
+
+	updateBottom(" Quick Menu 2/2 ", options);
 }
 
 
@@ -764,6 +823,11 @@ void NCursesWin::sendLoad(const std::string& file){
 void NCursesWin::sendLogLvl(uint8_t lvl){
 	// publish(cmdstrbase + "log " + std::to_string(lvl));
 	sendCommand("(bind ?*logLevel* " + std::to_string(lvl) + ")");
+}
+
+
+void NCursesWin::sendPath(const std::string& path){
+	publish(cmdstrbase + "path " + path);
 }
 
 
