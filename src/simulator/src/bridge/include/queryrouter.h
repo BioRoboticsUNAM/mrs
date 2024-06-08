@@ -1,11 +1,22 @@
+/* ** *****************************************************************
+* queryrouter.cpp
+*
+* Author: Mauricio Matamoros
+*
+* ** *****************************************************************/
+/** @file queryrouter.h
+ * Definition of the QueryRouter class: a CLIPS router to perform
+ * queries to clips, routing the output.
+ */
 #ifndef __QUERYROUTER_H__
 #define __QUERYROUTER_H__
-
 #pragma once
 
 #include <set>
 #include <string>
 #include "clipswrapper.h"
+
+namespace clips{
 
 class QueryRouter{
 // Singleton element access
@@ -106,5 +117,7 @@ private:
 	clips::RouterPriority priority;
 	std::string buffer;
 };
+
+} // end namespace clips
 
 #endif // __QUERYROUTER_H__

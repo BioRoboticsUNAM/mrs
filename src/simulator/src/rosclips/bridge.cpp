@@ -49,13 +49,13 @@ std::string get_current_path(){
 /* ** ********************************************************
 * Constructor
 * *** *******************************************************/
-Bridge::Bridge() : ClipsBridge(),
-	qr(QueryRouter::getInstance()){
-		qr.addLogicalName("ROS");
-		qr.addLogicalName("ros");
-		// qr.addLogicalName("stdout");
-		// qr.addLogicalName("wdisplay");
-		// qr.addLogicalName("wtrace");
+Bridge::Bridge() : ClipsBridge(){
+	clips::QueryRouter& qr = clips::QueryRouter::getInstance();
+	qr.addLogicalName("ROS");
+	qr.addLogicalName("ros");
+	// qr.addLogicalName("stdout");
+	// qr.addLogicalName("wdisplay");
+	// qr.addLogicalName("wtrace");
 }
 
 
@@ -235,11 +235,7 @@ void Bridge::cmdLoadCallback(std_msgs::String::ConstPtr const& msg){
 
 //string ← f(string query)
 bool Bridge::srvQueryKDB(simulator::QueryKDB::Request& req, simulator::QueryKDB::Response& res){
-	qr.enable();
-	clips::sendCommand(req.query, true);
-	clips::run();
-	res.result = qr.read();
-	qr.disable();
+	clips::query(req.query, res.result);
 	return true;
 }
 

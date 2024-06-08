@@ -50,8 +50,6 @@ private:
 	bool srvClearKDB(simulator::ClearKDB::Request& req, simulator::ClearKDB::Response& res);
 	bool srvResetKDB(simulator::ResetKDB::Request& req, simulator::ResetKDB::Response& res);
 
-private:
-	QueryRouter& qr;
 };
 
 #endif // __BRIDGE_H__

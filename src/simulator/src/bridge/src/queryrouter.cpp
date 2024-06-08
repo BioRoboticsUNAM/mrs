@@ -1,6 +1,7 @@
 #include <cstring>
 #include "queryrouter.h"
 
+namespace clips{
 /* ** ***************************************************************
 *
 * Static prototypes for interface with CLIPS
@@ -11,7 +12,6 @@ extern "C"{
 	static int printFunction(char *logicalName, char *str);
 	static int exitFunction(int exitCode);
 }
-
 
 
 /* ** ***************************************************************
@@ -167,3 +167,4 @@ int exitFunction(int exitCode){
 	return 1;
 }
 
+} // end namespace clips
