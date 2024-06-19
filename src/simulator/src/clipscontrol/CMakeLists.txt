@@ -3,8 +3,10 @@ set(PARENT_PROJECT_NAME "${PROJECT_NAME}")
 project(clipscontrol)
 
 if (PARENT_PROJECT_NAME)
-  add_compile_definitions(ROSPACKAGE=${PARENT_PROJECT_NAME})
-  add_compile_definitions(QUERYKDB_H="${PARENT_PROJECT_NAME}/QueryKDB.h")
+  # add_compile_definitions(ROSPACKAGE=${PARENT_PROJECT_NAME})
+  add_definitions(-DROSPACKAGE=${PARENT_PROJECT_NAME})
+  # add_compile_definitions(QUERYKDB_H="${PARENT_PROJECT_NAME}/QueryKDB.h")
+  add_definitions(-DQUERYKDB_H="${PARENT_PROJECT_NAME}/QueryKDB.h")
 endif ()
 
 
