@@ -25,6 +25,10 @@ add_executable(${PROJECT_NAME}
   ${CLIPSCONTROL_SRC}
 )
 
+add_dependencies(${PROJECT_NAME}
+  simulator_generate_messages_cpp
+)
+
 target_include_directories(${PROJECT_NAME}
   PUBLIC
   ${CURSES_INCLUDE_DIR}
