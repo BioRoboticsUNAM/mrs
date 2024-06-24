@@ -4,6 +4,7 @@
 !.gitignore
 !.gitattributes
 !start.sh
+!install.sh
 !LICENSE
 !readme.MD
 # And these subdirectories

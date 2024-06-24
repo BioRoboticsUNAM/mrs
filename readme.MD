@@ -13,15 +13,21 @@ If you are only interested in the CLIPS node check [rosCLIPS60](https://github.c
     2. `libncurses5-dev`
     3. `xterm`
     4. `python3-tk` or `python-tk` (depends on ROS distro)
+    5. `libopencv-dev`
 
-## Build and run
+## Build
 
 1. Clone inside your `catkin_ws` directory
 2. Run the following commands
 ```
+./install.sh
 source /opt/ros/«ROS DISTRO»/setup.bash
 catkin_make
 source devel/setup.bash
-./start.sh
+
+## Run with this two options
+./start.sh 
+## or
+roslaunch simulator simulator.launch
 ```
 
