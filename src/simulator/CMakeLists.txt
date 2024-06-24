@@ -19,10 +19,13 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   tf
   message_generation
+  image_transport
 )
 
 
 find_package(CGAL REQUIRED COMPONENTS Core)
+find_package(cv_bridge REQUIRED)
+find_package(OpenCV REQUIRED)
 set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "Don't override flags")
 message(CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS})
 include(${CGAL_USE_FILE})
@@ -164,6 +167,7 @@ add_subdirectory(src/clipscontrol)
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -278,9 +282,9 @@ add_executable(move_turtlebot_node src/turtlebot/move_turtlebot_node.cpp)
 target_link_libraries(move_turtlebot_node ${catkin_LIBRARIES})
 add_dependencies(move_turtlebot_node simulator_generate_messages_cpp)
 
-add_executable(simple_move_node src/turtlebot/simple_move_node.cpp)
-target_link_libraries(simple_move_node ${catkin_LIBRARIES})
-add_dependencies(simple_move_node simulator_generate_messages_cpp)
+#add_executable(move_minibot_node src/turtlebot/move_minibot_node.cpp)
+#target_link_libraries(move_minibot_node ${catkin_LIBRARIES})
+#add_dependencies(move_minibot_node simulator_generate_messages_cpp)
 
 add_executable(map_rviz_node src/visualization/map_rviz_node.cpp)
 target_link_libraries(map_rviz_node ${catkin_LIBRARIES})
@@ -310,4 +314,7 @@ add_executable(speech_generation_node src/speech_generation/speech_generation_no
 target_link_libraries(speech_generation_node ${catkin_LIBRARIES})
 add_dependencies(speech_generation_node simulator_generate_messages_cpp)
 
+add_executable(real_arena_viz src/visualization/real_arena_viz.cpp)
+target_link_libraries(real_arena_viz ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_dependencies(real_arena_viz simulator_generate_messages_cpp)
 
