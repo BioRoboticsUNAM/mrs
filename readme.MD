@@ -14,7 +14,7 @@ If you are only interested in the CLIPS node check [rosCLIPS60](https://github.c
     3. `xterm`
     4. `python3-tk` or `python-tk` (depends on ROS distro)
     5. `libopencv-dev`
-
+    6. `libcgal-qt5-dev` (if you are using ROS Kinetic)
 ## Build
 
 1. Clone inside your `catkin_ws` directory
