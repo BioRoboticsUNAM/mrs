@@ -866,6 +866,20 @@ class MobileRobotSimulator():
 		self.buttonSetZero.configure(state=state) 
 		self.buttonPlotTopological.configure(state=state)
 
+	def turn_light(self):
+		if self.varLight1.get():
+			self.set_light_position1(0.8, 2.4, True)
+			#print("Turn on light 1")
+		else:
+			self.set_light_position1(0.8, 2.4, False)
+			#print("Turn off light 1")
+		if self.varLight2.get():
+			self.set_light_position2(0.46, 0.24, True)
+			#print("Turn on light 2")
+		else:
+			self.set_light_position2(0.46, 0.24, False)
+			#print("Turn off light 2")
+		#print("---------------")
 
 
 
@@ -1368,6 +1382,25 @@ class MobileRobotSimulator():
 		self.robot_theta = float(self.entryAngle.get())
 		self.plot_robot()
 
+	def moveBotFoward(self):
+		self.movement = [1, 0, 0, 0]
+
+	def moveBotBackward(self):
+		self.movement = [0, 1, 0, 0]
+
+	def moveBotLeft(self):
+		self.movement = [0, 0, 1, 0]
+		
+	def moveBotRight(self):
+		self.movement = [0, 0, 0, 1]
+
+	def moveBotStop(self):
+		self.movement = []
+
+	def viewArena(self):
+		print("Open viewer")
+		# os.system("rosparam set /show_image true")
+
 
 	def set_zero_angle(self): #
 		self.robot_theta = 0.0
@@ -1613,7 +1646,7 @@ class MobileRobotSimulator():
 		self.entryTurnAngle .insert ( 0, '0.7857' )
 
 		self.labelVelocity = Label(self.rightMenu ,text = "Execution velocity:"        ,background = self.backgroundColor ,font = self.lineFont)
-		self.sliderVelocity =Scale(self.rightMenu, from_=1, to=3, orient=HORIZONTAL ,length=200 ,background = self.backgroundColor ,font = self.lineFont)
+		self.sliderVelocity =Scale(self.rightMenu, from_=1, to=3, orient=HORIZONTAL ,length=150 ,background = self.backgroundColor ,font = self.lineFont)
 		
 
 		# Sensors
@@ -1643,14 +1676,32 @@ class MobileRobotSimulator():
 		self.buttonRunSimulation = Button(self.rightMenu ,width = 20, text = "Run simulation", foreground = self.buttonFontColor ,background = self.buttonColor,font = self.buttonFont,command = lambda: self.s_t_simulation(True) )
 		self.buttonStop          = Button(self.rightMenu ,width = 20, text = "Stop", foreground = self.buttonFontColor ,background = self.buttonColor, font = self.buttonFont, command = lambda: self.s_t_simulation(False) )
 
+		self.labelBattery = Label(self.rightMenu ,text = "Battery Charge:", background = self.backgroundColor ,font = self.lineFont)
+		self.batteryBar   = ttk.Progressbar(self.rightMenu, orient=HORIZONTAL, mode='determinate', length=150)
+		self.batteryBar['value'] = 0
+
 		self.lableTurtleBot = Label(self.rightMenu, text = "Real robot" ,background = self.backgroundColor ,foreground = self.titlesColor ,font = self.headLineFont)
+		self.labelMoveBot   = Label(self.rightMenu, text = "Move robot" ,background = self.backgroundColor ,font = self.lineFont)
 		self.varTurtleBot   = IntVar()
 		self.varLidar   = IntVar(value=1)
 		self.varSArray   = IntVar()
+		self.varLight1  = IntVar()
+		self.varLight2  = IntVar()
 		self.checkTurtleBot = Checkbutton(self.rightMenu ,text = 'Use real robot' ,variable = self.varTurtleBot ,onvalue = 1 ,offvalue = 0 ,background = self.backgroundColor, command = self.use_real_robot )
 		self.checkLidar = Checkbutton(self.rightMenu ,text = 'Use lidar' ,variable = self.varLidar ,onvalue = 1 ,offvalue = 0 ,background = self.backgroundColor, command = self.use_lidar )
 		self.checkSArray = Checkbutton(self.rightMenu ,text = 'Use sensors array' ,variable = self.varSArray ,onvalue = 1 ,offvalue = 0 ,background = self.backgroundColor, command = self.use_s_array )
 		
+		self.checkLight1 = Checkbutton(self.rightMenu, text = 'Turn on light 1', variable = self.varLight1, onvalue = 1, offvalue = 0, background = self.backgroundColor, command = self.turn_light)
+		self.checkLight2 = Checkbutton(self.rightMenu, text = 'Turn on light 2', variable = self.varLight2, onvalue = 1, offvalue = 0, background = self.backgroundColor, command = self.turn_light)
+
+		self.buttonMoveFoward    = Button(self.rightMenu, width = 1, foreground = self.buttonFontColor, background = self.buttonColor , font = self.buttonFont, text = "^", command = self.moveBotFoward)
+		self.buttonMoveLeft      = Button(self.rightMenu, width = 1, foreground = self.buttonFontColor, background = self.buttonColor , font = self.buttonFont, text = "<", command = self.moveBotLeft)
+		self.buttonMoveRight     = Button(self.rightMenu, width = 1, foreground = self.buttonFontColor, background = self.buttonColor , font = self.buttonFont, text = ">", command = self.moveBotRight)
+		self.buttonMoveBackward  = Button(self.rightMenu, width = 1, foreground = self.buttonFontColor, background = self.buttonColor , font = self.buttonFont, text = "v", command = self.moveBotBackward)
+		self.buttonMoveStop      = Button(self.rightMenu, width = 1, foreground = self.buttonFontColor, background = self.buttonColor , font = self.buttonFont, text ="||", command = self.moveBotStop)
+
+		self.buttonViewerArena	 = Button(self.rightMenu, width = 10, height = 2, foreground = self.buttonFontColor, background = self.buttonColor , font = self.buttonFont, text ="View real", command = self.viewArena)
+		self.buttonReturnHome	 = Button(self.rightMenu, width = 10, height = 2, foreground = self.buttonFontColor, background = self.buttonColor , font = self.buttonFont, text ="Return home", command = self.viewArena)
 
 		#### Right menu widgets grid			
 
@@ -1710,6 +1761,7 @@ class MobileRobotSimulator():
 		self.labelOrigin        .grid(column = 0 ,row = 14  ,sticky = (N, W) ,padx = (10,5))
 		self.labelRange         .grid(column = 0 ,row = 15 ,sticky = (N, W) ,padx = (10,5))
 		self.labelValue         .grid(column = 0 ,row = 16 ,sticky = (N, W) ,padx = (10,5))
+		self.labelMoveBot       .grid(column = 0 ,row = 18 ,sticky = (N, W) ,padx = (20,5))
 
 		self.entryNumSensors    .grid(column = 1 ,row = 13  ,columnspan=2 ,sticky = (N, W) ,padx = 5)
 		self.entryOrigin        .grid(column = 1 ,row = 14  ,columnspan=2 ,sticky = (N, W) ,padx = 5)
@@ -1720,6 +1772,18 @@ class MobileRobotSimulator():
 		self.checkTurtleBot.grid(column = 1 ,row = 18 ,columnspan=2 ,sticky = (N, W) ,padx = 5)
 		self.checkLidar.grid(column = 1 ,row = 19 ,columnspan=2 ,sticky = (N, W) ,padx = 5)
 		self.checkSArray.grid(column = 1 ,row = 20 ,columnspan=2 ,sticky = (N, W) ,padx = 5)
+
+		self.checkLight1.grid(column = 1, row = 22, columnspan=2, sticky = (N, W), padx = 5)
+		self.checkLight2.grid(column = 1, row = 23, columnspan=2, sticky = (N, W), padx = 5)
+
+		self.buttonMoveFoward  .grid(column = 0, row = 19, columnspan = 2, sticky = (N, W), padx = 35)
+		self.buttonMoveLeft    .grid(column = 0, row = 20, columnspan = 2, sticky = (N, W), padx = 2)
+		self.buttonMoveRight   .grid(column = 0, row = 20, columnspan = 2, sticky = (N, W), padx = 68)
+		self.buttonMoveBackward.grid(column = 0, row = 21, columnspan = 2, sticky = (N, W), padx = 35)
+		self.buttonMoveStop    .grid(column = 0, row = 20, columnspan = 2, sticky = (N, W), padx = 35)
+
+		self.buttonViewerArena  .grid(column = 4, row = 24, columnspan = 3, sticky = (N, W), padx = (35,0), pady = 0)
+		self.buttonReturnHome  .grid(column = 4, row = 23, columnspan = 3, sticky = (N, W), padx = (35,0), pady = 0)
 
 		#self.buttonMapLess.grid(column = 1 ,row = 19 ,columnspan=1 ,sticky = (N, W) ,padx = 5)
 		#self.buttonMapMore.grid(column = 1 ,row = 19 ,columnspan=1 ,sticky = (N, E) ,padx = 5)
@@ -1732,6 +1796,8 @@ class MobileRobotSimulator():
 		self.buttonLastSimulation   .grid(column = 4 ,row = 16  ,sticky = (N, W) ,padx = (10,5))
 		self.buttonRunSimulation.grid(column = 4 ,row = 17 ,sticky = (N, W) ,padx = (10,5))
 		self.buttonStop         .grid(column = 4 ,row = 18 ,sticky = (N, W) ,padx = (10,5))
+		self.labelBattery		.grid(column = 4 ,row = 20 ,sticky = (N, W) ,padx = (10,5))
+		self.batteryBar			.grid(column = 4 ,row = 21 ,sticky = (N, W) ,padx = (10,5))
 
 		self.content  .grid(column = 0 ,row = 0 ,sticky = (N, S, E, W))
 		self.frame    .grid(column = 0 ,row = 0 ,columnspan = 3 ,rowspan = 2 ,sticky = (N, S, E, W))
