@@ -37,8 +37,8 @@ class MobileRobotSimulator():
 		self.mapX = 0 
 		self.mapY = 0
 		# canvas size in pixels
-		self.canvasX= 600
-		self.canvasY= 600
+		self.canvasX= 309
+		self.canvasY= 798
 		# robot position and angle
 		self.robot_theta=0
 		self.robotX=254             # BY SAVAGE
