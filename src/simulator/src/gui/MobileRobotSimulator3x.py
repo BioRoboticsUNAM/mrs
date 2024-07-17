@@ -19,6 +19,7 @@ from tkinter import messagebox as tkMessageBox
 import time
 import math
 from PIL import Image
+from PIL import ImageTk
 from PIL import ImageDraw
 import os
 import numpy as np
@@ -101,6 +102,14 @@ class MobileRobotSimulator():
 		self.steps_aux = 0
 		self.posible_collision = [None] * 512;
 		self.sensors_value = [None] * 512 
+
+		self.movement = []
+
+		# self.start()
+
+		self.play_record   = False
+		self.start_record  = False
+		self.finish_record = False
 
 
 
@@ -234,6 +243,14 @@ class MobileRobotSimulator():
 		return parameters
 	#end def
 
+	def restart_play_record(self):
+		self.play_record = False
+
+	def restart_start_record(self):
+		self.start_record = False
+	
+	def restart_finish_record(self):
+		self.finish_record = False
 	
 
 ##########################################
@@ -1401,6 +1418,21 @@ class MobileRobotSimulator():
 		print("Open viewer")
 		# os.system("rosparam set /show_image true")
 
+	def compileMessage(self):
+		status = os.system("cd ~/catkin_ws/mrs && catkin_make")
+		if status == 0:
+			tkMessageBox.showinfo("Compiled", "Compilation Successful")
+		else:
+			tkMessageBox.showinfo("Compilation Error", "Code has not compiled")
+
+	def playRecording(self):
+		self.play_record = True
+
+	def startRecording(self):
+		self.start_record = True
+	
+	def stopRecording(self):
+		self.finish_record = True
 
 	def set_zero_angle(self): #
 		self.robot_theta = 0.0
@@ -1519,9 +1551,11 @@ class MobileRobotSimulator():
 		self.robotColor  = '#F7CE3F'  
 		self.hokuyoColor = '#4F58DB' 
 		self.arrowColor  = '#1AAB4A' 
-		self.laserColor  = "#00DD41" 
-
-
+		self.laserColor  = "#00DD41"
+		self.warnLightColor   = '#F7FD2A'
+		self.warnStrongColor  = '#EEF511'
+		self.errorLightColor  = '#FA0A0A'
+		self.errorStrongColor = '#E10B0B'
 		
 		self.root = Tk()
 		self.root.protocol("WM_DELETE_WINDOW", self.kill)
@@ -1585,9 +1619,9 @@ class MobileRobotSimulator():
 		self.entryLightY = Label(self.rightMenu ,text = "Click Right" ,background = self.backgroundColor ,font = self.lineFont ,justify='center')
 		self.entryStepsExcec = Label(self.rightMenu ,text = "50000" ,background = self.backgroundColor ,font = self.lineFont ,justify='center')
 		#self.entryFile.insert ( 0, 'random_2' )
-		self.entryFile.insert ( 0, 'final' )
+		self.entryFile.insert ( 0, 'arena2' )
 		self.entrySteps.insert( 0, '1' )
-		self.entryBehavior.insert ( 0, '10' )
+		self.entryBehavior.insert ( 0, '2' )
 
 		self.buttonMapLess = Button(self.rightMenu ,width = 5, foreground = self.buttonFontColor, background = self.buttonColor , font = self.buttonFont ,text = "Zoom Out" ,command = self.mapLess)
 		self.buttonMapMore = Button(self.rightMenu ,width = 5, foreground = self.buttonFontColor, background = self.buttonColor , font = self.buttonFont, text = "Zoom In " ,command = self.mapMore)
@@ -1608,18 +1642,30 @@ class MobileRobotSimulator():
 		self.checkAddNoise    = Checkbutton(self.rightMenu ,text = 'Add Noise'    ,variable = self.varAddNoise    ,onvalue = 1 ,offvalue = 0 ,background = self.backgroundColor)
 		self.checkLoadObjects    = Checkbutton(self.rightMenu ,text = 'Load Objects'    ,variable = self.varLoadObjects    ,onvalue = 1 ,offvalue = 0 ,background = self.backgroundColor,command = self.read_objects)
 		
+		record_img = Image.open(self.rospack.get_path('simulator')+'/assets/images/recording.png')
+		stop_img   = Image.open(self.rospack.get_path('simulator')+'/assets/images/stop.png')
+		play_img   = Image.open(self.rospack.get_path('simulator')+'/assets/images/play.png')
+
+		record_img = record_img.resize((20, 20), Image.ANTIALIAS)
+		stop_img   = stop_img.resize((20, 20), Image.ANTIALIAS)
+		play_img   = play_img.resize((20, 20), Image.ANTIALIAS)
+
+		self.recordImg = ImageTk.PhotoImage(record_img)
+		self.stopImg = ImageTk.PhotoImage(stop_img)
+		self.playImg = ImageTk.PhotoImage(play_img)
 
 		self.checkFaster      .deselect()
 		self.checkShowSensors .select()
 		self.checkAddNoise    .deselect()
+		
 		# self.checkLoadObjects    .deselect()
 		self.checkLoadObjects.select()
-		#self.varLoadObjects = 1
+		self.varLoadObjects.set(0)
 		#self.read_objects()
 	
 		# Robot 
 
-		self.lableRobot     = Label(self.rightMenu ,text = "Robot"              ,background = self.backgroundColor ,foreground = self.titlesColor ,font = self.headLineFont )
+		self.labelRobot     = Label(self.rightMenu ,text = "Robot"              ,background = self.backgroundColor ,foreground = self.titlesColor ,font = self.headLineFont )
 		self.labelPoseX     = Label(self.rightMenu ,text = "Pose X:"            ,background = self.backgroundColor ,font = self.lineFont)
 		self.labelPoseY     = Label(self.rightMenu ,text = "Pose Y:"            ,background = self.backgroundColor ,font = self.lineFont)
 		self.labelAngle     = Label(self.rightMenu ,text = "Angle:"             ,background = self.backgroundColor ,font = self.lineFont)
@@ -1645,7 +1691,7 @@ class MobileRobotSimulator():
 		self.entryAdvance   .insert ( 0, '0.04' )
 		self.entryTurnAngle .insert ( 0, '0.7857' )
 
-		self.labelVelocity = Label(self.rightMenu ,text = "Execution velocity:"        ,background = self.backgroundColor ,font = self.lineFont)
+		self.labelVelocity = Label(self.rightMenu, text = "Execution velocity:"        ,background = self.backgroundColor ,font = self.lineFont)
 		self.sliderVelocity =Scale(self.rightMenu, from_=1, to=3, orient=HORIZONTAL ,length=150 ,background = self.backgroundColor ,font = self.lineFont)
 		
 
@@ -1680,6 +1726,9 @@ class MobileRobotSimulator():
 		self.batteryBar   = ttk.Progressbar(self.rightMenu, orient=HORIZONTAL, mode='determinate', length=150)
 		self.batteryBar['value'] = 0
 
+		self.labelBattAdvertise = Label(self.rightMenu, text = "Battery Low", background = self.errorStrongColor, foreground = self.titlesColor, font = self.headLineFont)
+		self.labelVideoNamed    = Label(self.rightMenu, text = "No video saved", font = self.lineFont)
+
 		self.lableTurtleBot = Label(self.rightMenu, text = "Real robot" ,background = self.backgroundColor ,foreground = self.titlesColor ,font = self.headLineFont)
 		self.labelMoveBot   = Label(self.rightMenu, text = "Move robot" ,background = self.backgroundColor ,font = self.lineFont)
 		self.varTurtleBot   = IntVar()
@@ -1700,12 +1749,20 @@ class MobileRobotSimulator():
 		self.buttonMoveBackward  = Button(self.rightMenu, width = 1, foreground = self.buttonFontColor, background = self.buttonColor , font = self.buttonFont, text = "v", command = self.moveBotBackward)
 		self.buttonMoveStop      = Button(self.rightMenu, width = 1, foreground = self.buttonFontColor, background = self.buttonColor , font = self.buttonFont, text ="||", command = self.moveBotStop)
 
+		self.buttonCompile		 = Button(self.rightMenu, width = 8, height = 2, font = self.buttonFont, text="Compile", command = self.compileMessage)
+
 		self.buttonViewerArena	 = Button(self.rightMenu, width = 10, height = 2, foreground = self.buttonFontColor, background = self.buttonColor , font = self.buttonFont, text ="View real", command = self.viewArena)
 		self.buttonReturnHome	 = Button(self.rightMenu, width = 10, height = 2, foreground = self.buttonFontColor, background = self.buttonColor , font = self.buttonFont, text ="Return home", command = self.viewArena)
+
+		self.buttonStartRecording= Button(self.rightMenu, image = self.recordImg, width = 20, font = self.buttonFont, command = self.startRecording)
+		self.buttonStopRecording = Button(self.rightMenu, image = self.stopImg,   width = 20, font = self.buttonFont, command = self.stopRecording)
+		self.buttonPlayRecording = Button(self.rightMenu, image = self.playImg,   width = 20, font = self.buttonFont, command = self.playRecording)
+
 
 		#### Right menu widgets grid			
 
 		# Environment
+
 		self.lableEnvironment  .grid(column = 0 ,row = 0 ,sticky = (N, W) ,padx = (5,5))
 		self.labelFile         .grid(column = 0 ,row = 1 ,sticky = (N, W) ,padx = (10,5))
 		self.labelSteps        .grid(column = 0 ,row = 2 ,sticky = (N, W) ,padx = (10,5))
@@ -1735,7 +1792,7 @@ class MobileRobotSimulator():
 		
 		# Robot
 
-		self.lableRobot     .grid(column = 4 ,row = 0 ,sticky = (N, W) ,padx = (5,5))     
+		self.labelRobot     .grid(column = 4 ,row = 0 ,sticky = (N, W) ,padx = (5,5))     
 		self.labelPoseX     .grid(column = 4 ,row = 1 ,sticky = (N, W) ,padx = (10,5))
 		self.labelPoseY     .grid(column = 4 ,row = 2 ,sticky = (N, W) ,padx = (10,5))
 		self.labelAngle     .grid(column = 4 ,row = 3 ,sticky = (N, W) ,padx = (10,5))
@@ -1782,8 +1839,14 @@ class MobileRobotSimulator():
 		self.buttonMoveBackward.grid(column = 0, row = 21, columnspan = 2, sticky = (N, W), padx = 35)
 		self.buttonMoveStop    .grid(column = 0, row = 20, columnspan = 2, sticky = (N, W), padx = 35)
 
-		self.buttonViewerArena  .grid(column = 4, row = 24, columnspan = 3, sticky = (N, W), padx = (35,0), pady = 0)
+		self.buttonCompile	   .grid(column = 0, row = 24, columnspan = 1, sticky = (N, W), padx = 5, pady = 10)
+
+		self.buttonViewerArena .grid(column = 4, row = 24, columnspan = 3, sticky = (N, W), padx = (35,0), pady = 0)
 		self.buttonReturnHome  .grid(column = 4, row = 23, columnspan = 3, sticky = (N, W), padx = (35,0), pady = 0)
+
+		self.buttonStartRecording.grid(column = 1, row = 24, columnspan = 1, sticky = (N, W), padx = (5, 0), pady = 20)
+		self.buttonStopRecording .grid(column = 1, row = 24, columnspan = 1, sticky = (N, W), padx = (35, 0), pady = 20)
+		self.buttonPlayRecording .grid(column = 1, row = 24, columnspan = 1, sticky = (N, W), padx = (65, 0), pady = 20)
 
 		#self.buttonMapLess.grid(column = 1 ,row = 19 ,columnspan=1 ,sticky = (N, W) ,padx = 5)
 		#self.buttonMapMore.grid(column = 1 ,row = 19 ,columnspan=1 ,sticky = (N, E) ,padx = 5)
@@ -1798,6 +1861,8 @@ class MobileRobotSimulator():
 		self.buttonStop         .grid(column = 4 ,row = 18 ,sticky = (N, W) ,padx = (10,5))
 		self.labelBattery		.grid(column = 4 ,row = 20 ,sticky = (N, W) ,padx = (10,5))
 		self.batteryBar			.grid(column = 4 ,row = 21 ,sticky = (N, W) ,padx = (10,5))
+		self.labelBattAdvertise .grid(column = 4 ,row = 22 ,sticky = (N, W) ,padx = (20,5))
+		self.labelVideoNamed	.grid(column = 0 ,row = 24 ,sticky = (N, W) ,padx = 0, pady = 65, columnspan = 3)
 
 		self.content  .grid(column = 0 ,row = 0 ,sticky = (N, S, E, W))
 		self.frame    .grid(column = 0 ,row = 0 ,columnspan = 3 ,rowspan = 2 ,sticky = (N, S, E, W))
@@ -1848,5 +1913,5 @@ class MobileRobotSimulator():
 		self.read_objects()
 		# self.plot_robot2()
 		# self.plot_robot()
-		self.s_t_simulation(True)
+		self.s_t_simulation(False)
 		self.root.mainloop()
