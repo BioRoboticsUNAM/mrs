@@ -15,6 +15,7 @@ import rospy
 import signal
 from threading import Thread, RLock
 from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
+from std_msgs.msg import Int8MultiArray
 
 gui = None
 guiMutex = RLock()
@@ -102,11 +103,56 @@ def handle_print_graph(req):
 	resp.success=1;
 	return resp
 
+def turn_lights(lights_array):
+	lights = Int8MultiArray()
+	lights.data = lights_array
+	lights_pub.publish(lights)
+
+def publish_movement(move):
+	rate = rospy.Rate(1.2)
+	move_cmd = Twist()
+
+	try:
+		if move[0] == 1:
+			move_cmd.linear.x  = 0.5
+			move_cmd.angular.z = 0
+			move_pub.publish(move_cmd)
+			rate.sleep()
+
+		elif move[1] == 1:
+			move_cmd.linear.x  = -0.5
+			move_cmd.angular.z = 0
+			move_pub.publish(move_cmd)
+			rate.sleep()
+
+		elif move[2] == 1:
+			move_cmd.linear.x  = 0
+			move_cmd.angular.z = 2.4
+			move_pub.publish(move_cmd)
+			rate.sleep()
+
+		elif move[3] == 1:
+			move_cmd.linear.x  = 0
+			move_cmd.angular.z = -2.4
+			move_pub.publish(move_cmd)
+			rate.sleep()
+
+		else:
+			move_cmd.linear.x  = 0
+			move_cmd.angular.z = 0
+			move_pub.publish(move_cmd)
+	
+	except:
+		move_cmd.linear.x  = 0
+		move_cmd.angular.z = 0
+		move_pub.publish(move_cmd)
+ 
 
 def setup_ros():
 	global rate, a, b, c, d, e
 	global odom_pub, objPose_pub, pub_params
 	global odom_broadcaster
+	global lights_pub, move_pub
 	rospy.init_node('simulator_gui_node')
 	a = rospy.Service('simulator_robot_step', simulator_robot_step, handle_robot_step)
 	b = rospy.Service('simulator_print_graph', simulator_algorithm_result, handle_print_graph)
@@ -123,6 +169,8 @@ def setup_ros():
 	pub_params = rospy.Publisher('simulator_parameters_pub', Parameters, queue_size = 0)
 
 	odom_broadcaster = tf.TransformBroadcaster()
+	lights_pub = rospy.Publisher("/turn_lights", Int8MultiArray, queue_size=5)
+	move_pub   = rospy.Publisher("/cmd_vel", Twist, queue_size = 10)
 
 	rate = rospy.Rate(100)
 #end def
@@ -139,6 +187,9 @@ def ros_poll():
 	vth = 0.1
 	current_time = rospy.Time.now()
 	last_time = rospy.Time.now()
+
+	lights_array = [0, 0]
+	last_movement = []
 
 	msg_params = Parameters()
 
@@ -196,6 +247,15 @@ def ros_poll():
 
 		objPose_pub.publish(convertArray2Pose(objects_data))
 
+		if lights_array != [parameters[19], parameters[20]]:
+			lights_array = [parameters[19], parameters[20]]
+			turn_lights(lights_array)
+
+		if last_movement != parameters[21]:
+			publish_movement(parameters[21])
+			last_movement = parameters[21]
+			#gui.movement = [0, 0, 0, 0]
+
 		rate.sleep()
 	# end while
 	print('ROS thread done')
@@ -226,6 +286,7 @@ def main():
 	print('GUI closed. Shutting down...')
 	with guiMutex:
 		gui = None
+	turn_lights([0, 0, 0, 0, 0, 0])
 	print('Bye!')
 
 
