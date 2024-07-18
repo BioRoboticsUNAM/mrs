@@ -50,6 +50,8 @@ class MobileRobotSimulator():
 		self.polygonMap = []
 		self.nodes_image = None
 		self.light=-1
+		self.light1=-1
+		self.light2=-1
 		self.robot=-1
 
 		self.flagOnce=False
@@ -239,6 +241,38 @@ class MobileRobotSimulator():
 				parameters.append( True )
 			else:
 				parameters.append( False )
+
+		try:
+			parameters.append( bool(self.varLight1.get()) )
+		except ValueError:
+			if self.varLight1.get()==1:
+				parameters.append( True )
+			else:
+				parameters.append( False )
+		try:
+			parameters.append( bool(self.varLight2.get()) )
+		except ValueError:
+			if self.varLight2.get()==1:
+				parameters.append( True )
+			else:
+				parameters.append( False )
+		try:
+			parameters.append(self.movement)
+		except ValueError:
+			parameters.append([])
+		try:
+			parameters.append(self.play_record)
+		except ValueError:
+			parameters.append(False)
+		try:
+			parameters.append(self.start_record)
+		except ValueError:
+			parameters.append(False)
+		try:
+			parameters.append(self.finish_record)
+		except ValueError:
+			parameters.append(False)
+		
 
 		return parameters
 	#end def
@@ -589,6 +623,22 @@ class MobileRobotSimulator():
 		self.entryLightX.config(text=str(self.light_x)[:4])
 		self.entryLightY.config(text=str(self.light_y)[:4])
 	#end def
+
+	def set_light_position1(self,x,y,visible):
+		if self.light1 > 0:
+			self.w.delete(self.light1)
+		y1 = self.mapY - y
+		self.light1 = self.w.create_image(x/self.mapX*self.canvasX, y1/self.mapY*self.canvasY, image = self.gif2)
+		if visible is False:
+			self.w.delete(self.light1)
+
+	def set_light_position2(self,x,y,visible):
+		if self.light2 > 0:
+			self.w.delete(self.light2)
+		y1 = self.mapY - y
+		self.light2 = self.w.create_image(x/self.mapX*self.canvasX, y1/self.mapY*self.canvasY, image = self.gif2)
+		if visible is False:
+			self.w.delete(self.light2)
 
 
 	def right_click(self,event): # Another way to start simulations, by plot the light ( goal point ).
@@ -1416,7 +1466,7 @@ class MobileRobotSimulator():
 
 	def viewArena(self):
 		print("Open viewer")
-		# os.system("rosparam set /show_image true")
+		os.system("rosparam set /show_image true")
 
 	def compileMessage(self):
 		status = os.system("cd ~/catkin_ws/mrs && catkin_make")
