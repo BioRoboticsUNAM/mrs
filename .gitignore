@@ -2,7 +2,7 @@
 *
 # But these files
 !.gitignore
-!.gitattributes
+!.gitmodules
 !start.sh
 !install.sh
 !LICENSE

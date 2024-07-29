@@ -2,12 +2,13 @@
 *
 # But these files
 !.gitignore
-!.gitattributes
 !CMakeLists.txt
 !package.xml
-!LICENSE
-!readme.MD
 # And these subdirectories
 !msg/
 !srv/
 !src/
+!assets/
+!assets/*
+#!assets/images/
+#!assets/images/**
