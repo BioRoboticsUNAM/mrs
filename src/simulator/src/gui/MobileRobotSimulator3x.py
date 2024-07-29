@@ -161,7 +161,7 @@ class MobileRobotSimulator():
 		except ValueError:
 			parameters.append(0.0)
 		try:
-			parameters.append( self.mapY  - (self.robotY)*self.mapX / self.canvasY )
+			parameters.append( self.mapY  - (self.robotY)*self.mapY / self.canvasY )
 		except ValueError:
 			parameters.append(0.0)
 		try:
@@ -1953,6 +1953,8 @@ class MobileRobotSimulator():
 
 		self.checkLidar.configure(state="disabled")
 		self.checkSArray.configure(state="disabled")
+
+		self.labelBattAdvertise.grid_forget()
 
 
 		
