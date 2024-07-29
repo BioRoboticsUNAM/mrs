@@ -16,9 +16,17 @@ import signal
 from threading import Thread, RLock
 from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
 from std_msgs.msg import Int8MultiArray
+#import tkMessageBox
+import tkinter.messagebox
 
 gui = None
 guiMutex = RLock()
+
+battery_low = False
+battery_chargin = False
+
+video_name = ""
+video_path = "/home/"+'admin'+"/catkin_ws/mrs/recording/"
 
 def turtle_odometry(msg):
 	quaternion = (
@@ -257,6 +265,17 @@ def ros_poll():
 			#gui.movement = [0, 0, 0, 0]
 
 		rate.sleep()
+
+		if(parameters[22]):
+			play_recording()
+			gui.restart_play_record()
+		if(parameters[23]):
+			start_recording()
+			gui.recording()
+		if(parameters[24]):
+			stop_recording()
+			gui.restart_finish_record()
+
 	# end while
 	print('ROS thread done')
 #end def
@@ -272,6 +291,66 @@ def sigint_handler(*args):
 	print('Gui terminated')
 #end def
 
+def battery_charge():
+	try:
+		get_batt_perc = rospy.ServiceProxy('/battery_perc', GetBattPerc)
+		gui.batteryBar['value'] = get_batt_perc().batt_percentage
+	except rospy.ServiceException as e:
+		gui.batteryBar['value'] = 0
+
+def battery_advertise(message, color):
+	gui.labelBattAdvertise.grid_forget()
+	gui.labelBattAdvertise.config( text = message, bg = color )
+	gui.labelBattAdvertise.grid(column = 4, row = 22, sticky = (N, W), padx = (10, 5))
+
+def play_recording():
+	os.system('mplayer' + video_path + video_name)
+	print("playing video: " + video_path + video_name)
+
+
+def transfer_video():
+	messagebox.showinfo("Video loading", "Loading video..." +  video_name )
+	time.sleep(6)
+	try:
+		video_transfer = rospy.ServiceProxy('/transfer_file', TransferFile)
+		if(video_transfer(video_name).status == "ok"):
+			rospy.loginfo("Video transfered correctly")
+		else:
+			rospy.logerr("Video was not found")
+	except:
+		print("/transfer_file service couldnt get response")
+		messagebox.showerror("Video loading", "There was an error loading video" )
+
+def start_recording():
+	global video_name
+	print("holas")
+	try:
+		start_recording = rospy.ServiceProxy('/start_recording', StartRecording)
+		video_name = start_recording(os.environ.get("USER")).video_name
+
+		if(video_name != ""):
+			gui.labelVideoNamed = Label(gui.rightMenu, text = "File: " + video_name, font = gui.lineFont)
+			gui.labelVideoNamed.grid(column = 0 ,row = 24 ,sticky = (N, W) ,padx = 0, pady = 65,columnspan = 3)
+			messagebox.showinfo("Video recording", "Video recording has started")
+
+	except rospy.ServiceException as e:
+		print("/start_recording service couldnt get response")
+		messagebox.showerror("Video recording", "There was an errro recording video")
+
+def stop_recording():
+	try:
+		stop_recording = rospy.ServiceProxy('/finish_recording', FinishRecording)
+		print(stop_recording().video_status)
+		transfer_video()
+	except rospy.ServiceException as e:
+		print("/finish_recording service couldnt get response")
+
+def get_params():
+	global battery_low, battery_charging
+	if rospy.has_param('/battery_low'):
+		battery_low = rospy.get_param("/battery_low")
+	if rospy.has_param('/battery_charging'):
+		battery_charging = rospy.get_param("/battery_charging")
 
 def main():
 	global gui, rosThread
