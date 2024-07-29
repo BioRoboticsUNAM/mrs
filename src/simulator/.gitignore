@@ -9,6 +9,6 @@
 !srv/
 !src/
 !assets/
-!assets/*
-#!assets/images/
-#!assets/images/**
+#!assets/texting.txt
+!assets/images/
+!assets/images/*
